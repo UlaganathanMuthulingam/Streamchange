@@ -2,12 +2,12 @@ package com.maveric.streamchange;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,27 +27,44 @@ import org.testng.Assert;
 
 
 public class ReadDataFromExcel {
-	public Map<String,String> userStramValues = new LinkedHashMap<String,String>();
-	public Map<String,LinkedHashMap<String,String>> userStreamOutputValues=new LinkedHashMap<String,LinkedHashMap<String,String>>();
-	public Map<String,String> userStreamOutputValuesIndividual=new LinkedHashMap<String,String>();
+	public Map<String,Map<String,String>> userStramValues = new LinkedHashMap<String,Map<String,String>>();
+	public  Map<String,String> userStreamOutputFlagsIndividual;
+	public  Map<String,String> userStreamSelectedIndividual;
+	public  Map<String,Map<String,String>> userStreamSelectedAll=new LinkedHashMap<String,Map<String,String>>();
+	public Map<String,Map<String,String>> userStreamOutputValuesAll=new LinkedHashMap<String,Map<String,String>>();
 	
-	public void updateExcelValuesInMap(Map<String,String> inputMap) throws IOException
+	public void updateExcelValuesInMap(Map<String,Map<String,String>> inputMap) throws IOException
 	{
+		Map<String,String> tempMap;
+		
 		FileInputStream input=new FileInputStream("C:\\Users\\1601017\\Desktop\\Stream Change\\input.xlsx");
 		XSSFWorkbook workbook=new XSSFWorkbook(input);
 		XSSFSheet sheet=workbook.getSheet("Sheet1");
+		String employeeId = "";
 		XSSFRow row1,row2;
 		row1=sheet.getRow(0);
-		row2=sheet.getRow(1);
-		int col=row1.getLastCellNum();
-			for(int j=0;j<col;j++)
+		
+		int rowCount=sheet.getLastRowNum();
+		int colcount=row1.getLastCellNum();
+		
+		for(int row=1;row<=rowCount;row++)
+		{
+			tempMap=new LinkedHashMap<String,String>();
+			row2=sheet.getRow(row);
+			for(int col=0;col<colcount;col++)
 			{
-				String key=row1.getCell(j).toString().trim();
-				String value=row2.getCell(j).toString().trim();
-				inputMap.put(key, value);
 				
-			}				
+				String key=row1.getCell(col).toString().trim();
+				String value=row2.getCell(col).toString().trim();
+				employeeId=row2.getCell(5).toString().trim();
+				tempMap.put(key, value);
+				
+			}
 			
+			inputMap.put(employeeId, tempMap);			
+			
+		}									
+		
 	}
 	
 	
@@ -76,740 +93,7 @@ public class ReadDataFromExcel {
 
 	
 	
-	public void checkReportingSkills(String question,String subQuestion,String selectedAnswers)
-	{
-		
-		switch (selectedAnswers) {
-		case "Execute testing based on Test Case specification":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println(question+"--"+subQuestion);
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		case "Execute end to end testing of the complete work flow":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;	
-		case "Ability to manage complex execution of test cases based on dependencies and liaise with automation/developers/BA etc. to expedite test case execution":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Perform limited testing based on experience":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		case "Perform extensive exploratory Adhoc/random testing based on experience and also help peers":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-			
-		case "Perform extensive exploratory Adhoc/random testing based on experience, help peers and also implement execution optimizations":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
 	
-		case "Is compliant with test evidence documentation requirements":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		
-		case "Is compliant with test evidence documentation requirements for self & audit evidences for peers or other team members":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		
-		case "Is compliant with test evidence documentation requirements for self & audit evidences for peers or other team members and provide root cause analysis":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Demonstrated ability to drive process improvements in test case execution by spotting and improving bottleneck activities":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Familiar with using the Test Automation Framework for writing test cases":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-	
-		case "Demonstrated ability to use Test Automation Framework for writing new test cases and minor upgrades to the framework to support new features":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-	
-		case "Ability to design a new automation framework and / or significantly upgrade an existing framework":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-	
-		case "Proficiency in using the run plan and executing test script supported with evidence from projects":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-
-			
-		case "Proficiency in modifying and executing test scripts based on changes to run plan":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermedaite");
-			break;
-
-			
-		case "Proficiency in creating, modifying and executing parallel test scripts based on changes to run plan with parallel execution":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-
-		case "Demonstrated ability to make minor maintenance changes to the automation cases and execute based on the test progress and test results":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		case "Ability to set up automation execution and ability to collect results as well as evidences and report them effectively":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		
-		case "Ability to independently manage test execution for self and others managing data, script maintenance, batch and other functional/automation dependencies":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-		
-		case "Fully trained on a Domain/Product area and can articulate concepts with clarity":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		
-			
-		case "Is seen as a practitioner in the domain / product area and can work independently with no guidance, leading teams towards optimized test design and coverage independently":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		
-		
-		case "Ability to direct test and functional prioritization in scrums and / or test strategy on the basis of complexities and dependencies of each area within the product / domain of expertise":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-		
-		case "Ability to recast knowledge into forms conducive for model based design - such as domain taxonomies, function/sub function listings etc.":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-		
-		case "Produces defect reports and knows status of defects of own work":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-	
-		
-		case "Demonstrated ability to review defects independently and filter out invalid defects":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		
-		case "Ability to analyse and report the data extracted from a Defect Tracking tool":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-		
-		case "Understands Team dynamics and works harmoniously with any team":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		case "Understands importance of Team Dynamics. Creates a collaborative culture and empowers Delivery Teams":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		case "Proactively and reactively identifies problems or issues in team dynamics and rectifies them":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-		
-		case "Gathers feedback from team and Stakeholders at regular intervals and works on action items":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		case "Ability to work on constructive actions from feedback in a manner that positively impact Stakeholders":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-			
-		case "Ability to engage in varying types of feedback, choosing the right type at the appropriate time and ensuring the discussion and decision sticks":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Aware of team vision and motivates team to progress towards the same":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		case "Define team vision and goals and motivate team to progress towards the same":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		case "Define team vision and goals and guide team using quantitative techniques on the progress towards vision / goal":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Ability to measure, report and trend metrics on project over releases/milestones":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-
-			
-		case "Ability to define and set up metrics of interest and show improvements on metrics and monitoring":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-
-			
-		case "Ability to upfront predict, commit and then define metrics of interest and show committed improvements on metrics and monitoring":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-
-		
-		case "Ability to provide Project Governance reports effectively and on time":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-
-			
-			
-		case "Ability to define and execute Project Governance with senior internal and external Stakeholders - with regular meetings":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-
-		
-		case "Ability to bring in insights and industry best practices through collaborative Stakeholder Governance forums with multi-level Governance meetings":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-
-		case "Understand Test Strategy and define the Test Strategy independently and plan the testing for a project":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		
-		case "Recommend multiple strategies based on needs and complexities of the project":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		
-		case "Coaches other program (non-testing) teams as the central point of expertise":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Ability to provide test scoping through functional breakdown, test cases sizing and test cycles":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		
-		case "Ability to  sequence test cycles/phases in line with customer schedule, plan effort and schedule along with scope boundaries":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		
-			
-		case "Provides costing, schedule and optimization solutions for proposals and supports in proposal defense":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Ability to impose a common set of processes to report progress, change and uncertainty":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-
-			
-		case "Ability to setup uniform processes to monitor and handle change. Ensure no scope creep and monetize changes":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-
-			
-			
-		case "Ability to drive a change control board to approve and percolate changes through the appropriate processes. Control changes at customer level":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-
-		
-		case "Understands Test Code and ability to contribute with help of Low design with coding practices intact":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		
-		case "Ability to design and write code independently with code metrics and coding practices intact":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-			
-		
-		case "Ability to perform Code Optimisation and demonstrate through code metrics":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Creates and understands class diagrams and implements the same in code":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		
-		case "Ability to build code aligned to OO concepts and layered to support business and data layers":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-			
-		case "Demonstrated ability to code for complex logic/algorithms":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Ability to understand UML concepts, design diagrams and code as per design specifications":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		
-		case "Ability to create DB designs, Class diagrams and other UML designs to represent flow of information":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		
-		case "Ability to conceptualise and design using design patterns and optimise the design":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Has knowledge of what tools are used for Frameworks, Build and Scripting":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		case "Ability to understand the limitations of the tools":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		case "Ability to add Plugins/Add Ons to the tools to overcome limitations":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Ability to make limited contribution to Framework Development with support":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-		
-		case "Contributes individually to development of Automation Framework":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-		
-		case "Ability to implement best design/coding standards/practices for Solution Development and ability to coach other team members":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-		
-		case "Knowledge of basic database and SQL skills with no or limited experience on Test Data Management":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		case "Automation of Test Data Management and planning to provision test data":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-			
-		case "Ability to integrate with test data messaging and other sources that can be integrated through automation / RPA (e.g. reset a flag or balance on Mainframe system)":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Trained in HTML reporting and SQL based data querying":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		
-		case "Demonstrated ability to generate reports using HTML, Extent or any fit for purpose tools":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-			
-		case "Ability to coach team on best practices on new and efficient ways for building reports - such as AI based reporting, Graphana, Kibana, MATLAB etc":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Knowledge of  SWAGGER/ WSDL, XML concepts and file passing (JSON/XML )":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-
-		
-		case "Knowledge of service/micro-service/API and Application Architecture, Test infrastructures, configurations and environments":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-
-			
-		case "Ability to apply Model based, coverage led and automated test case design for services and hands-free execution with fully sourced synthetic and provisioned test data":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-
-		case "Knowledge of Performance test and Engineering and ability to apply Scripting skills to build load tests":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category basic");
-			break;
-
-		case "Expert in performance engineering":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Adavaced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Adavaced");
-			break;	
-			
-		case "Trained in data/predictive analysis with limited or no practical experience":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		case "Ability to leverage Data Analytics, Machine Learning and build an adaptive framework dynamically to optimizes these assets based on lifecycle data such as: build failure trends, defect detection and escape patterns, root causes of defects":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-			
-		case "Ability to create or tweak predictive analytics models (test and improve them using the lifecycle data to arrive at testing predictions)":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-			
-		case "Ability to pull out data for various measures in a hands-free and repeatability manner and present visuals":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		case "Ability to create various engineering dashboards from data that is sourced real time or in batch mode":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-			
-		case "Ability to create visuals to derive interesting insights and formulate various hypothesis based data testing":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Coaches team to sustain and scale this capability":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-	
-		case "Knowledge of workflows limited to one function in the domain (e.g. Retail/Cards)":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-
-		case "Knowledge of complete operations of a particular division (e.g. Cards, Wealth Management, Corporate Banking, Retail Banking) and can apply the knowledge for testing":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-
-		case "Provides expertise for most of the operations of an entity (e.g. Bank, Insurance) integrated with data needs and story proofing/user story analysis etc":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-
-		case "Understands the domain as interacting sequence of activities and actors, such as a swim lane, conceptual map, function matrix etc":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-
-		
-		case "Ability to represent the domain as interacting sequence of activities and actors, such as a swim lane, conceptual map, function matrix etc.":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-
-			
-		case "Ability to provide a functional/ domain taxonomy that will enable automation teams to build out automation units from business concepts and flows":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-			
-		case "Trained in Requirements Analysis and Agile/Scrum Concepts ":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-			
-		case "Ability to trace down from requirements to implementation cycles":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-			
-		case "Ability to establish minimum acceptance criteria for requirements and development cycles and orchestrate test & development teams towards consistent velocity of team":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-
-		case "Ability to analyse requirements for a single project and translate to the Project Team":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Basic");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Basic");
-			break;
-
-			
-		case "Demonstrated ability to influence Scrum team in the areas of test estimation, test prioritization and sequencing":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Intermediate");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Intermediate");
-			break;
-
-			
-		case "Expert in Requirements Engineering and Requirements Impact assessment leading to Change management":
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "Advanced");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Advanced");
-			break;
-		
-		case "NA;":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "NA");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Not Applicable");
-			break;
-		
-		case "NA":	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, "NA");
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category Not Applicable");
-			break;
-	
-			
-		default:
-			System.out.println("Nothing");
-			break;
-	
-		
-		}
-		
-	}
-	
-	public void validatingCheckBox(String question,String subQuestion,String selectedAnswers)
-	{
-			
-		switch (subQuestion) {
-		case "Test Case Design":
-			String testcaseDesignAdvanced="Design quality test cases with help from the available specification, user documentation, interviews/discussions, functional flows & operational flows;Demonstrated competency in reviewing test cases of peers and ensuring consistency and quality of test cases;Demonstrated proficiency in establishing test coverage and traceability;Competent to tag and mark test cases for various suites and plan for test data and run scheduling for test cases;Proficiency in subsetting test cases based on regression and impact";
-			String testcaseDesignintermediate="Design quality test cases with help from the available specification, user documentation, interviews/discussions, functional flows & operational flows;Demonstrated competency in reviewing test cases of peers and ensuring consistency and quality of test cases;Demonstrated proficiency in establishing test coverage and traceability";
-			String testcaseDesignBasic="Design quality test cases with help from the available specification, user documentation, interviews/discussions, functional flows & operational flows";
-			String testcaseDesignFlag=flagChecker(selectedAnswers,testcaseDesignAdvanced, testcaseDesignintermediate,testcaseDesignBasic, 5, 3, 1);
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, testcaseDesignFlag);
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+testcaseDesignFlag);	
-			break;
-		case "STLC Tools":
-			String stlcToolsAdvanced="Knowledge of tools;Shares and publishes short notes on various tools across test life cycle;Uses tools for various activities such as test case writing, test execution, test management, reporting;Knowledge of the limitation of test execution and test management tools;Competent in identifying improvements to the tool based on the analysis of the limitations;Demonstrated proficiency in bringing tool adoption into the program along with process improvements;Competent in independently scripting/adapting tool for current environment";
-			String stlcToolsIntermediate="Knowledge of tools;Shares and publishes short notes on various tools across test life cycle;Uses tools for various activities such as test case writing, test execution, test management, reporting;Knowledge of the limitation of test execution and test management tools;Competent in independently scripting/adapting tool for current environment";
-			String stlcToolsBasic="Knowledge of tools;Uses tools for various activities such as test case writing, test execution, test management, reporting";
-			String stlcToolsFlag=flagChecker(selectedAnswers,stlcToolsAdvanced,stlcToolsIntermediate,stlcToolsBasic, 7, 5,2);
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, stlcToolsFlag);
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+stlcToolsFlag);
-			break;
-		case "Test Automation Design":
-			String testAutomationDesignAdvanced="Ability to adopt TDD, BDD, methods and integrate data, manual + automated testing in test case design;Ability to package test automation suites for execution;Ability to apply best practices such as audit trail, data independence, multithreading and reporting;Ability to create hands-free test execution methods that can be handed over for execution and maintenance to manual or entry level automation Test Engineers;Uses industry standard design standards to bring in overall productivity improvement, test case execution windows;Ability to create modular test case designs that can be fully re-used and integrated with a domain model;Demonstrated ability to write optimized scripts and having knowledge to integrate with other tools";
-			String testAutomationDesignIntermediate="Ability to adopt TDD, BDD, methods and integrate data, manual + automated testing in test case design;Ability to package test automation suites for execution;Ability to apply best practices such as audit trail, data independence, multithreading and reporting;Uses industry standard design standards to bring in overall productivity improvement, test case execution windows;Demonstrated ability to write optimized scripts and having knowledge to integrate with other tools";
-			String testAutomationDesignBasic="Demonstrated ability to independently maintain test cases for minor changes";
-			String testAutomationDesignFlag=flagChecker(selectedAnswers,testAutomationDesignAdvanced,testAutomationDesignIntermediate,testAutomationDesignBasic, 7, 5, 1);	
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, testAutomationDesignFlag);
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+testAutomationDesignFlag);
-			break;
-		case "Test Automation Execution":
-			String testAutomationExecutionAdvaced="Ability to demonstrate productivity improvements in test execution by reducing execution time windows;Ability to schedule and run hands-free and parallel tests and troubleshoot issues related to the same";
-			String testAutomationExecutionIntermediate="Ability to adopt TDD, BDD, methods and integrate data, manual + automated testing in test case design;Ability to package test automation suites for execution;Ability to apply best practices such as audit trail, data independence, multithreading and reporting;Uses industry standard design standards to bring in overall productivity improvement, test case execution windows;Demonstrated ability to write optimized scripts and having knowledge to integrate with other tools";
-			String testAutomationExecutionBasic="Ability to launch and execute automation test cases and prepare and feed test data for the same";
-			String testAutomationExecutionFlag=flagChecker(selectedAnswers,testAutomationExecutionAdvaced, testAutomationExecutionIntermediate,testAutomationExecutionBasic, 2, 2,1 );
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, testAutomationExecutionFlag);
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+testAutomationExecutionFlag);
-			break;
-		
-		case "Defect Logging and Reporting":
-			String defectLoggingAndReportingAdvaced="Demonstrated ability to perform Defect Triage and run Defect Triage and RCA meetings effectively with Stakeholders;Aware of the blocked test cases (Test Funnel) due to defects";
-			String defectLoggingAndReportingIntermediate="Aware of the blocked test cases (Test Funnel) due to defects";
-			String defectLoggingAndReportingBasic="Ability to adopt a project tailored defect Tracking tool, maintains hygiene in entering details of defects with clarity and in accordance with defect life cycle and standards of the project.;Aware of the blocked test cases (Test Funnel) due to defects";
-			String defectLoggingAndReportingFlag=flagChecker(selectedAnswers,defectLoggingAndReportingAdvaced, defectLoggingAndReportingIntermediate,defectLoggingAndReportingBasic, 2, 1,2);
-			userStreamOutputValuesIndividual.put(question+"--"+subQuestion, defectLoggingAndReportingFlag);
-			System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+defectLoggingAndReportingFlag);
-			break;
-			
-		 case "Specialized Testing  [ API, Performance Testing, Mobile Testing ]":
-			 	String specializedTestingAdvaced="Ability to perform testing for at least one type or multiple types of specialised testing using a tool or automate and ensure that all defects that can potentially arise in a given problem state can be adequately covered through various techniques;Advises or supports specialised testing in opportunities";
-				String specializedTestingIntermediate="Ability to perform testing for at least one type or multiple types of specialised testing using a tool or automate and ensure that all defects that can potentially arise in a given problem state can be adequately covered through various techniques";
-				String specializedTestingBasic="Knowledge of at least one specialized testing type, and ability to define test types for that testing type;Ability to perform testing for at least one type or multiple types of specialised testing using a tool or automate and ensure that all defects that can potentially arise in a given problem state can be adequately covered through various techniques";
-				String specializedTestingFlag=flagChecker(selectedAnswers,specializedTestingAdvaced, specializedTestingIntermediate,specializedTestingBasic, 2, 1,2);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, specializedTestingFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+specializedTestingFlag);
-				break;
-				
-		 case "Defect Management":
-			 	String defectManagementAdvaced="Establish and publish Defect Metrics supported with evidence from project execution;Perform Root Cause Analysis with successful outcomes;Demonstrated ability to manage Defect Review meetings effectively;Ability to recommend and document best practices in Defect Management;Ability to automate defect metrics collection and plot various defect based process improvements;Ability to tie down high defect areas to project risk and plan for adequate risk coverage through increase of test coverage";
-				String defectManagementIntermediate="Establish and publish Defect Metrics supported with evidence from project execution;Perform Root Cause Analysis with successful outcomes;Demonstrated ability to manage Defect Review meetings effectively";
-				String defectManagementBasic="Has knowledge of Defect Management with no or limited experience of handling Defect Review calls and collating Metrics";
-				String defectManagementFlag=flagChecker(selectedAnswers,defectManagementAdvaced, defectManagementIntermediate,defectManagementBasic, 6, 3,1);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, defectManagementFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+defectManagementFlag);
-				break;
-				
-		 case "Team Management":
-			 	String teamManagementAdvaced="Ability to bring people together to form a motivated team;Ability to help create the right environment for a team to work in;Recognizes and deals with issues and conflicts;Structure the team in an optimal way depending on the situation;Ability to identify issues through health-checks with the team and remedy the same;Ability to accelerate Team Development";
-				String teamManagementIntermediate="Ability to bring people together to form a motivated team;Ability to help create the right environment for a team to work in;Recognizes and deals with issues and conflicts;Structure the team in an optimal way depending on the situation";
-				String teamManagement="No values from excel";
-				String teamManagementFlag=flagChecker(selectedAnswers,teamManagementAdvaced, teamManagementIntermediate,teamManagement, 6, 4,0);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, teamManagementFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+teamManagementFlag);
-				break;
-		
-		 case "Test Management":
-			 	String testManagementAdvaced="Test Planning, Estimation, Monitoring and Control;Ability to perform Test Management for a small project or independently for a large single project or multiple projects;Defines a run plan given a set of tests and a go-live target;Ability to share and implement best practices in Test Management;Ability to coach and set up test dashboards and bring insights to stakeholders at CXO levels";
-				String testManagementIntermediate="Test Planning, Estimation, Monitoring and Control;Ability to perform Test Management for a small project or independently for a large single project or multiple projects;Defines a run plan given a set of tests and a go-live target";
-				String testManagementBasic="Test Planning, Estimation, Monitoring and Control;Ability to perform Test Management for a small project or independently for a large single project or multiple projects;Defines a run plan given a set of tests and a go-live target";
-				String testManagementFlag=flagChecker(selectedAnswers,testManagementAdvaced, testManagementIntermediate,testManagementBasic, 5, 3,3);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, testManagementFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+testManagementFlag);
-				break;		
-	
-		 	case "Project and Delivery Management":
-		 		String projectDeliveryAndManagementAdvaced="Ability to handle Resource Planning and Scheduling;Ability to manage multiple projects";
-				String projectDeliveryAndManagementIntermediate="Ability to apply Frameworks and Methodologies (e.g. Agile);Ability to handle Resource Planning and Scheduling;Ability to actively address internal and external risks, issues and dependencies including where ownership exists outside the team;Ability to manage multiple projects";
-				String projectDeliveryAndManagementBasic= "Trained in Project Management concepts;Ability to support a Lead or Manager to perform Delivery Management;Ability to handle Resource Planning and Scheduling;Ability to review and track projects to completion;Ability to actively address internal and external risks, issues and dependencies including where ownership exists outside the team";
-				String projectDeliveryAndManagementFlag=flagChecker(selectedAnswers,projectDeliveryAndManagementAdvaced, projectDeliveryAndManagementIntermediate,projectDeliveryAndManagementBasic, 2, 4,5);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, projectDeliveryAndManagementFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+projectDeliveryAndManagementFlag);
-				break;		
-	
-		 	case "Test Strategy and Planning":
-		 		String testStrategyAndPlanningAdvaced="Ability to lead a continual planning process in a very complex environment";
-				String testStrategyAndPlanningIntermediate="Understands the environment and is able to prioritise the most important or highest value tasks;Ability to manage complex internal and external dependencies;Ability to eliminate blockers that affect the plan and develop a plan for difficult situations";
-				String testStrategyAndPlanningBasic="";
-				String testStrategyAndPlanningFlag=flagChecker(selectedAnswers,testStrategyAndPlanningAdvaced, testStrategyAndPlanningIntermediate,testStrategyAndPlanningBasic, 1, 3,0);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, testStrategyAndPlanningFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+testStrategyAndPlanningFlag);
-				break;	
-				
-		 	case "Test Solutions (Pre Sales)":
-		 		String testSolutionsAdvaced="Ability to individually handle Test Solutions and responses for proposals for a single project or multiple projects;Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date;Ability to conduct effective and compelling proposal walkthroughs leading towards conversion";
-				String testSolutionsIntermediate="Ability to support development of solution for RFP response;Ability to individually handle Test Solutions and responses for proposals for a single project or multiple projects;Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date";
-				String testSolutionsBasic="Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date";
-				String testSolutionsFlag=flagChecker(selectedAnswers,testSolutionsAdvaced, testSolutionsIntermediate,testSolutionsBasic, 4, 4,2);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, testSolutionsFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+testSolutionsFlag);
-				break;
-				
-		  	case "Project Management":
-		  		String projectManagementAdvaced="Ability to apply  superior analytical skills;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures;Ability to continuously focus on Risk Management and include contingency & mitigation planning;Ability to focus on Governance to achieve desired results in the program;Ability to think Big Picture and set the vision;Has sufficient seniority and credibility to advise project teams on their projects in relation to the program;Ability to build effective relationships with Stakeholders;Ability to perform Resource forecasting and fulfilment";
-				String projectManagementIntermediate="Ability to apply  superior analytical skills;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures;Ability to continuously focus on Risk Management and include contingency & mitigation planning;Ability to focus on Governance to achieve desired results in the program;Ability to think Big Picture and set the vision";
-				String projectManagementBasic="Ability to adjust plans based on performance changes;Ensures Project Managers use the correct Testing life-cycle for the characteristics of the products they have to test;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures";
-				String projectManagementFlag=flagChecker(selectedAnswers,projectManagementAdvaced, projectManagementIntermediate,projectManagementBasic, 9,6,4);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, projectManagementFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+projectManagementFlag);
-				break;
-			
-		  	case "OO Programming":
-		  		String ooProgrammingAdvaced="Uses code configuration management and tools (git/stash/vss etc.) in the most efficient way possible - No code on personal devices;Ability to implement best practices in programming";
-				String ooProgrammingIntermediate="Uses code configuration management and tools (git/stash/vss etc.) in the most efficient way possible - No code on personal devices;Sets up standards and accelerators for development;Demonstrated ability to perform Code Reviews;Ability to implement best practices in programming ";
-				String ooProgrammingBasic="Trained or has knowledge in OO Programming and Design;Uses code configuration management and tools (git/stash/vss etc.) in the most efficient way possible - No code on personal devices";
-				String ooProgrammingFlag=flagChecker(selectedAnswers,ooProgrammingAdvaced, ooProgrammingIntermediate,ooProgrammingBasic,2,4,2);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, ooProgrammingFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+ooProgrammingFlag);
-				break;
-		  	
-		  	case "Software Design":
-		  		String softwareDesignAdvaced="Ability to create portability software that can be called in an API - with no dependency on OS, Text files, human intervention etc;Ability to create and package re-usability software assets for more than one problem / program and promote such re-use;Coaches team on best practices for software design";
-				String softwareDesignIntermediate="Ability to ensure isolation of layers such as business, data, logic etc so that design or framework can work in a plug/play mode;Ability to create and package re-usability software assets for more than one problem / program and promote such re-use;Coaches team on best practices for software design";
-				String softwareDesignBasic="";
-				String softwareDesignFlag=flagChecker(selectedAnswers,softwareDesignAdvaced, softwareDesignIntermediate,softwareDesignBasic, 3,3,0);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, softwareDesignFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+softwareDesignFlag);
-				break;
-			
-			
-		  	case "Knowledge of Multiple Tools (Build tools, Test frameworks)":
-		  		String knowledgeofMultipleToolsAdvaced="Ability to optimise the use of tools;Ability to conceptualise an integrated platform using the tools";
-				String knowledgeofMultipleToolsIntermediate="Not Applicable for this question";
-				String knowledgeofMultipleToolsBasic="";
-				String knowledgeofMultipleToolsFlag=flagChecker(selectedAnswers,knowledgeofMultipleToolsAdvaced, knowledgeofMultipleToolsIntermediate,knowledgeofMultipleToolsBasic, 2,0,0);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, knowledgeofMultipleToolsFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+knowledgeofMultipleToolsFlag);
-				break;
-		
-		  	case "Solution Development":
-		  		String solutionDevelopmentAdvaced="Ability to debug all failures independently without any help;Ability to conceptualise solutions to support custom tools or hybrid tools as well as to support Release Management";
-				String solutionDevelopmentIntermediate="Ability to debug all failures independently without any help";
-				String solutionDevelopmentBasic="";
-				String solutionDevelopmentFlag=flagChecker(selectedAnswers,solutionDevelopmentAdvaced, solutionDevelopmentIntermediate,solutionDevelopmentBasic, 2, 1,0);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, solutionDevelopmentFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+solutionDevelopmentFlag);
-				break;
-
-		  	case "Test Data Management and Database Skills":
-		  		String testDataManagementAdvaced="";
-				String testDataManagementIntermediate="";
-				String testDataManagementBasic="";
-				String testDataManagementtFlag=flagChecker(selectedAnswers,testDataManagementAdvaced, testDataManagementIntermediate,testDataManagementBasic, 2, 1,0);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, testDataManagementtFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+testDataManagementtFlag);
-				break;
-			
-		  	case "Levels of Automation":
-		  		String levelsOfAutomationAdvaced="";
-				String levelsOfAutomationIntermediate="";
-				String levelsOfAutomationBasic="";
-				String levelsOfAutomationFlag=flagChecker(selectedAnswers,levelsOfAutomationAdvaced, levelsOfAutomationIntermediate,levelsOfAutomationBasic, 2, 1,0);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, levelsOfAutomationFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+levelsOfAutomationFlag);
-				break;	
-		  	
-		  	case "Service Engineering":	
-		  		String serviceEngineeringAdvaced="Ability to contribute to service level tests - through automated test design from specifications;Ability to integrate hands free Test Automation in CI/CD pipeline;Builds automation framework from ground up, integrating with CI tools and Test Case Management tools";
-				String serviceEngineeringIntermediate="Ability to contribute to service level tests - through automated test design from specifications;Ability to integrate hands free Test Automation in CI/CD pipeline";
-				String serviceEngineeringBasic="Knowledge of Service Automation concepts";
-				String serviceEngineeringFlag=flagChecker(selectedAnswers,serviceEngineeringAdvaced, serviceEngineeringIntermediate,serviceEngineeringBasic,3, 2,1);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, serviceEngineeringFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+serviceEngineeringFlag);
-				break;
-		  	
-		  	case "Performance Engineering":
-		  		String performanceEngineeringAdvaced="Ability to gain and contribute knowledge on new performance engineering skills using new tools and technologies";
-				String performanceEngineeringIntermediate="Ability to analyse performance test result to identify bottlenecks (use advanced SQL skills);Ability to identify transactions and workflows and calculate workload TPS goals and rates;Ability to use and customize monitoring tools helps in identifying the server side bottlenecks in performance testing";
-				String performanceEngineeringBasic="";
-				String performanceEngineeringFlag=flagChecker(selectedAnswers,performanceEngineeringAdvaced, performanceEngineeringIntermediate,performanceEngineeringBasic,1,3,0);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, performanceEngineeringFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+performanceEngineeringFlag);
-				break;
-		  	
-		  	case "Conceptual View of Domain":
-		  		
-		  		String conceptualViewofDomainAdvaced="Ability to segregate scenarios and isolate data needs, PIIs and key actors in a Domain;Ability to provide consulting on data model needs for the domain to tie in to Test data planning and provisioning for test cases";
-				String conceptualViewofDomainIntermediate="Ability to segregate scenarios and isolate data needs, PIIs and key actors in a Domain;Ability to guide prioritization of testing within a domain";
-				String conceptualViewofDomainBasic="Ability to guide prioritization of testing within a domain";
-				String conceptualViewofDomainFlag=flagChecker(selectedAnswers,conceptualViewofDomainAdvaced, conceptualViewofDomainIntermediate,conceptualViewofDomainBasic, 2, 2,1);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, conceptualViewofDomainFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+conceptualViewofDomainFlag);
-				break;
-		  		 
-		  	case "Model Based Test Design":
-		  		String modelBasedTestDesignAdvaced="Ability to create models for different levels of requirements (business process level, feature or story level) linked to each other;Ability to describe models at different levels of abstraction with high level flows;Practitioner for Test basis and Consultant for various automated test design models such as API, services etc;Expert in designing test cases through test basis model and re-use strategies;Ability to analyse, validate and manage requirements for a single project and provide assistance to the Project Team";
-				String modelBasedTestDesignIntermediate="Ability to analyse and specify requirements in a structured manner and model the behavioural flow using the model based technique or tool;Ability to apply and drive Model Based test design;Ability to prepare Test Basis, Transaction Matrix and Scenario Matrix with help";
-				String modelBasedTestDesignBasic="Knowledge of model based testing and development of requirements in the form of models (e.g. Behavioural model, Test Basis etc.);Knowledge on Test Basis Methodology and design test cases from the Scenario Matrix and Transaction Matrix";
-				String modelBasedTestDesignFlag=flagChecker(selectedAnswers,modelBasedTestDesignAdvaced, modelBasedTestDesignIntermediate,modelBasedTestDesignBasic, 5, 3, 2);
-				userStreamOutputValuesIndividual.put(question+"--"+subQuestion, modelBasedTestDesignFlag);
-				System.out.println("Question - "+ question +" \n SubQuestion - "+ subQuestion +"\n selectedAnswers - " +selectedAnswers +"\n Category "+modelBasedTestDesignFlag);
-				break;
-				
-		  	default:
-			System.out.println("Nothing");
-			break;
-		}
-	}
 	
 	
 	public List<String> splitValue(String value)
@@ -874,270 +158,211 @@ public class ReadDataFromExcel {
 	}
 	}
 	
+	public String replaceTwosemicolons(String inputString)
+	{
+		String output=inputString.replaceAll(";;", ";");
+		return output;
+	}
+	
 	public void verifyFlags(Map<String,String> values) throws Exception
 	{
-		
-		userStreamOutputValuesIndividual.put("Name",values.get("Name"));
-		userStreamOutputValuesIndividual.put("Email",values.get("Email"));
-		userStreamOutputValuesIndividual.put("Employee ID",values.get("Employee ID"));
-		userStreamOutputValuesIndividual.put("CURRENT DESIGNATION - PROPOSED DESIGNATION",values.get("CURRENT DESIGNATION - PROPOSED DESIGNATION"));
-		
-		
-		
+		userStreamOutputFlagsIndividual=new LinkedHashMap<String,String>();
+		userStreamSelectedIndividual=new LinkedHashMap<String,String>();
+		userStreamOutputFlagsIndividual.put("Name",values.get("Name"));
+		userStreamOutputFlagsIndividual.put("Email",values.get("Email"));
+		userStreamOutputFlagsIndividual.put("Employee ID",values.get("Employee ID"));
+		userStreamOutputFlagsIndividual.put("CURRENT DESIGNATION - PROPOSED DESIGNATION",values.get("CURRENT DESIGNATION - PROPOSED DESIGNATION"));
+		userStreamSelectedIndividual.put("Name", values.get("Name"));
+		userStreamSelectedIndividual.put("Email",values.get("Email"));
+		userStreamSelectedIndividual.put("Employee ID",values.get("Employee ID"));
+		userStreamSelectedIndividual.put("CURRENT DESIGNATION - PROPOSED DESIGNATION",values.get("CURRENT DESIGNATION - PROPOSED DESIGNATION"));
 		
 		/*TEST CASE DESIGN*/
 		String testCaseDesignTopic=getValuefromMap(values, "Test Case Design");
+		testCaseDesignTopic=replaceTwosemicolons(testCaseDesignTopic);
 		flagAssessment("Test Case Design", testCaseDesignTopic);
-			
+		userStreamSelectedIndividual.put("Test Case Design", testCaseDesignTopic);	
+		
 		/*TEST EXECUTION*/
 		String testExecutionTopic=getValuefromMap(values, "End to End Testing")+";"+getValuefromMap(values, "Exploratory Testing")+";"+getValuefromMap(values, "Compliance")+";"+getValuefromMap(values, "Test Execution");
+		testExecutionTopic=replaceTwosemicolons(testExecutionTopic);
 		flagAssessment("Test Execution", testExecutionTopic);
-			
+		userStreamSelectedIndividual.put("Test Execution", testExecutionTopic);
 		
 		/*STLC Tools*/
 		String stlcToolsTopic=getValuefromMap(values, "STLC Tools");
+		stlcToolsTopic=replaceTwosemicolons(stlcToolsTopic);
 		flagAssessment("STLC Tools", stlcToolsTopic);
+		userStreamSelectedIndividual.put("STLC Tools", stlcToolsTopic);
 		
 		/*Test Automation Design*/
 		String testAutomationDesignTopic=getValuefromMap(values, "Automation Development")+";"+getValuefromMap(values, "Test Automation Design");
+		testAutomationDesignTopic=replaceTwosemicolons(testAutomationDesignTopic);
 		flagAssessment("Test Automation Design", testAutomationDesignTopic);
+		userStreamSelectedIndividual.put("Test Automation Design", testAutomationDesignTopic);
 		
 		/*Test Automation Execution*/
 		String testAutomationExecutionTopic=getValuefromMap(values, "Test Automation Execution")+";"+getValuefromMap(values, "Automation Execution")+";"+getValuefromMap(values, "Sustenance/Maintainence");
+		testAutomationExecutionTopic=replaceTwosemicolons(testAutomationExecutionTopic);
 		flagAssessment("Test Automation Execution", testAutomationExecutionTopic);
-		
+		userStreamSelectedIndividual.put("Test Automation Execution", testAutomationExecutionTopic);
 		
 		/*Domain/Product Knowledge*/
 		String domainKnowledgeTopic=getValuefromMap(values, "Backlog Prioritization")+";"+getValuefromMap(values, "Domain/Product Knowledge");
+		domainKnowledgeTopic=replaceTwosemicolons(domainKnowledgeTopic);
 		flagAssessment("Domain/Product Knowledge", domainKnowledgeTopic);
+		userStreamSelectedIndividual.put("Domain/Product Knowledge", domainKnowledgeTopic);
 		
 		/*Defect Logging and Reporting*/
 		String defectLoggingAndReportingTopic=getValuefromMap(values, "Defect Logging and Reporting")+";"+getValuefromMap(values, "Defect Management");
+		defectLoggingAndReportingTopic=replaceTwosemicolons(defectLoggingAndReportingTopic);
 		flagAssessment("Defect Logging and Reporting", defectLoggingAndReportingTopic);
-		
+		userStreamSelectedIndividual.put("Defect Logging and Reporting", defectLoggingAndReportingTopic);
 		
 		/*Specialized Testing  [ API, Performance Testing, Mobile Testing ]*/
 		String specializedTestingTopic=getValuefromMap(values, "Specialized Testing  [ API, Performance Testing, Mobile Testing ]");
+		specializedTestingTopic=replaceTwosemicolons(specializedTestingTopic);
 		flagAssessment("Specialized Testing  [ API, Performance Testing, Mobile Testing ]", specializedTestingTopic);
+		userStreamSelectedIndividual.put("Specialized Testing  [ API, Performance Testing, Mobile Testing ]", specializedTestingTopic);
 		
 		
 		/*Defect Management*/
 		String defectManagementTopic=getValuefromMap(values, "Defect Management");
+		defectManagementTopic=replaceTwosemicolons(defectManagementTopic);
 		flagAssessment("Defect Management", defectManagementTopic);
-		
+		userStreamSelectedIndividual.put("Defect Management", defectManagementTopic);
 		
 		/*Team Management*/
 		String teamManagementTopic=getValuefromMap(values, "Collaboration")+";"+getValuefromMap(values, "Stake holder Engagement")+";"+getValuefromMap(values, "Vision & Goals")+";"+getValuefromMap(values, "Team Management");
+		teamManagementTopic=replaceTwosemicolons(teamManagementTopic);
 		flagAssessment("Team Management", teamManagementTopic);
-		
+		userStreamSelectedIndividual.put("Team Management", teamManagementTopic);
 		
 		/*Test Management*/
 		String testManagementTopic=getValuefromMap(values, "Test Management");
+		testManagementTopic=replaceTwosemicolons(testManagementTopic);
 		flagAssessment("Test Management", testManagementTopic);
+		userStreamSelectedIndividual.put("Test Management", testManagementTopic);
 		
 		/*Project and Delivery Management*/
 		String projectAndDeliveryManagementTopic=getValuefromMap(values, "Project and Delivery Management")+";"+getValuefromMap(values, "Progress monitoring")+";"+getValuefromMap(values, "Governance");
+		projectAndDeliveryManagementTopic=replaceTwosemicolons(projectAndDeliveryManagementTopic);
 		flagAssessment("Project and Delivery Management",projectAndDeliveryManagementTopic);
+		userStreamSelectedIndividual.put("Project and Delivery Management",projectAndDeliveryManagementTopic);
 		
 		
 		/*Test Strategy and Planning*/
 		String testStrategyAndPlanningTopic=getValuefromMap(values, "Planning")+";"+getValuefromMap(values, "Test Strategy and Planning");
+		testStrategyAndPlanningTopic=replaceTwosemicolons(testStrategyAndPlanningTopic);
 		flagAssessment("Test Strategy and Planning",testStrategyAndPlanningTopic);
+		userStreamSelectedIndividual.put("Test Strategy and Planning",testStrategyAndPlanningTopic);
 		
 		/*Test Solutions (Pre Sales)*/
 		String testSolutionsTopic=getValuefromMap(values, "Test Solutions (Pre Sales)")+";"+getValuefromMap(values, "Estimation");
-		flagAssessment( "Test Solutions (Pre Sales)",testSolutionsTopic);
+		testSolutionsTopic=replaceTwosemicolons(testSolutionsTopic);
+		flagAssessment("Test Solutions (Pre Sales)",testSolutionsTopic);
+		userStreamSelectedIndividual.put("Test Solutions (Pre Sales)",testSolutionsTopic);
 		
 		/*Program Management*/
 		String programManagementTopic=getValuefromMap(values, "Processes modeling and Change Management Planning")+";"+getValuefromMap(values, "Project Management");
+		programManagementTopic=replaceTwosemicolons(programManagementTopic);
 		flagAssessment("Program Management", programManagementTopic);
+		userStreamSelectedIndividual.put("Program Management", programManagementTopic);
 		
 		/*OO Programming*/
 		String oOProgrammingTopic=getValuefromMap(values, "OO Programming")+";"+getValuefromMap(values, "Test scripting")+";"+getValuefromMap(values, "Application Coding");
+		oOProgrammingTopic=replaceTwosemicolons(oOProgrammingTopic);
 		flagAssessment("OO Programming", oOProgrammingTopic);
+		userStreamSelectedIndividual.put("OO Programming", oOProgrammingTopic);
 		
 		/*Software Design*/
 		String softwareDesignTopic=getValuefromMap(values, "Application Design")+";"+getValuefromMap(values, "Software Design");
+		softwareDesignTopic=replaceTwosemicolons(softwareDesignTopic);
 		flagAssessment("Software Design", softwareDesignTopic);
-		
+		userStreamSelectedIndividual.put("Software Design", softwareDesignTopic);
 		
 		/*Knowledge of Multiple Tools (Build tools, Test frameworks)*/
 		String knowledgeofMultipleToolsTopic=getValuefromMap(values, "Test Architect")+";"+getValuefromMap(values, "Knowledge of Multiple Tools (Build tools, Test frameworks)");
+		knowledgeofMultipleToolsTopic=replaceTwosemicolons(knowledgeofMultipleToolsTopic);
 		flagAssessment("Knowledge of Multiple Tools (Build tools, Test frameworks)", knowledgeofMultipleToolsTopic);
+		userStreamSelectedIndividual.put("Knowledge of Multiple Tools (Build tools, Test frameworks)", knowledgeofMultipleToolsTopic);
 		
 		/*Solution Development*/
 		String solutionDevelopmentTopic=getValuefromMap(values, "Test Automation Specialist")+";"+getValuefromMap(values, "Solution Development");
+		solutionDevelopmentTopic=replaceTwosemicolons(solutionDevelopmentTopic);
 		flagAssessment("Solution Development", solutionDevelopmentTopic);
+		userStreamSelectedIndividual.put("Solution Development", solutionDevelopmentTopic);
+		
 		
 		/*Test Data Management and Database Skills*/
 		String testDataManagementandDatabaseSkillsTopics=getValuefromMap(values, "Database Test Engineer")+";"+getValuefromMap(values, "Test Data Management and Database Skills");
+		testDataManagementandDatabaseSkillsTopics=replaceTwosemicolons(testDataManagementandDatabaseSkillsTopics);
 		flagAssessment("Test Data Management and Database Skills", testDataManagementandDatabaseSkillsTopics);
+		userStreamSelectedIndividual.put("Test Data Management and Database Skills", testDataManagementandDatabaseSkillsTopics);
 		
 		/*Levels of Automation*/
 		String levelsofAutomationTopic=getValuefromMap(values, "Levels of Automation");
+		levelsofAutomationTopic=replaceTwosemicolons(levelsofAutomationTopic);
 		flagAssessment("Levels of Automation", levelsofAutomationTopic);
+		userStreamSelectedIndividual.put("Levels of Automation", levelsofAutomationTopic);
+		
 		
 		/*Reporting Skills*/
 		String reportingSkillsTopic=getValuefromMap(values, "Reporting Analyst")+";"+getValuefromMap(values, "Reporting Skills");
+		reportingSkillsTopic=replaceTwosemicolons(reportingSkillsTopic);
 		flagAssessment("Reporting Skills", reportingSkillsTopic);
+		userStreamSelectedIndividual.put("Reporting Skills", reportingSkillsTopic);
 		
 		/*Service Engineering*/
 		String serviceEngineeringTopic=getValuefromMap(values, "API Engineering")+";"+getValuefromMap(values, "Service Engineering");
+		serviceEngineeringTopic=replaceTwosemicolons(serviceEngineeringTopic);
 		flagAssessment("Service Engineering", serviceEngineeringTopic);
+		userStreamSelectedIndividual.put("Service Engineering", serviceEngineeringTopic);
 		
 		/*Performance Engineering*/
 		String performanceEngineeringTopic=getValuefromMap(values, "Performance Testing")+";"+getValuefromMap(values, "Performance Engineering");
+		performanceEngineeringTopic=replaceTwosemicolons(performanceEngineeringTopic);
 		flagAssessment("Performance Engineering", performanceEngineeringTopic);
+		userStreamSelectedIndividual.put("Performance Engineering", performanceEngineeringTopic);
 		
 		/*Data Science and Testing Predictions*/
 		String dataScienceAndTestingPredictionsTopic=getValuefromMap(values, "Data Scientist")+";"+getValuefromMap(values, "Data Visualization")+";"+getValuefromMap(values, "Data Science and Testing Predictions");
+		dataScienceAndTestingPredictionsTopic=replaceTwosemicolons(dataScienceAndTestingPredictionsTopic);
 		flagAssessment("Data Science and Testing Predictions", dataScienceAndTestingPredictionsTopic);
-		
+		userStreamSelectedIndividual.put("Data Science and Testing Predictions", dataScienceAndTestingPredictionsTopic);
 		
 		/*Business Process Knowledge (Client specific/Product Specific)*/
 		String businessProcessKnowledgeTopic=getValuefromMap(values, "Process Owner");
+		businessProcessKnowledgeTopic=replaceTwosemicolons(businessProcessKnowledgeTopic);
 		flagAssessment("Business Process Knowledge (Client specific/Product Specific)", businessProcessKnowledgeTopic);
-		
+		userStreamSelectedIndividual.put("Business Process Knowledge (Client specific/Product Specific)", businessProcessKnowledgeTopic);
 		
 		/*Conceptual View of Domain*/
 		String conceptualViewofDomainTopic=getValuefromMap(values, "Functional / Domain Consultant")+";"+getValuefromMap(values, "Conceptual View of Domain");
+		conceptualViewofDomainTopic=replaceTwosemicolons(conceptualViewofDomainTopic);
 		flagAssessment("Conceptual View of Domain", conceptualViewofDomainTopic);
-		
+		userStreamSelectedIndividual.put("Conceptual View of Domain", conceptualViewofDomainTopic);
 		
 		/*Requirement Analysis and Influencing SCRUM*/
 		String requirementAnalysisandInfluencingCRUMTopic=getValuefromMap(values, "Requirement Analysis and Influencing SCRUM")+";"+getValuefromMap(values, "Business Analyst");
+		requirementAnalysisandInfluencingCRUMTopic=replaceTwosemicolons(requirementAnalysisandInfluencingCRUMTopic);
 		flagAssessment("Requirement Analysis and Influencing SCRUM", requirementAnalysisandInfluencingCRUMTopic);
+		userStreamSelectedIndividual.put("Requirement Analysis and Influencing SCRUM", requirementAnalysisandInfluencingCRUMTopic);
 		
 		/*Model Based Test Design*/
 		String modelBasedTestDesignTopic=getValuefromMap(values, "Model Based Test Design");
+		modelBasedTestDesignTopic=replaceTwosemicolons(modelBasedTestDesignTopic);
 		flagAssessment("Model Based Test Design", modelBasedTestDesignTopic);
-		
+		userStreamSelectedIndividual.put("Model Based Test Design", modelBasedTestDesignTopic);
 		
 		
 		 
-		System.out.println();
-		
-		
-		
-		/*STLC Tools
-		validatingCheckBox("STLC Tools", "STLC Tools", values.get("STLC Tools"));
-		
-		Test Automation Design
-		checkReportingSkills("Test Automation Design","Automation Development",values.get("Automation Development"));
-		validatingCheckBox("Test Automation Design", "Test Automation Design", values.get("Test Automation Design"));
-		
-		Test Automation Execution
-		validatingCheckBox("Test Automation Execution", "Test Automation Execution", values.get("Test Automation Execution"));
-		checkReportingSkills("Test Automation Execution", "Automation Execution", values.get("Automation Execution"));
-		checkReportingSkills("Test Automation Execution", "Sustenance/Maintenance", values.get("Sustenance/Maintenance"));
-		
-		Domain/Product Knowledge
-		checkReportingSkills("Domain/Product Knowledge (for roles in Stream 1 & 2)", "Backlog Prioritization", values.get("Backlog Prioritization"));
-		checkReportingSkills("Domain/Product Knowledge (for roles in Stream 1 & 2)", "Domain/Product Knowledge", values.get("Domain/Product Knowledge"));
-		
-		Defect Logging And Reporting
-		validatingCheckBox("Defect Logging And Reporting", "Defect Logging and Reporting", values.get("Defect Logging and Reporting"));
-		checkReportingSkills("Defect Logging And Reporting", "Defect Management Reports", values.get("Defect Management Reports"));
-		
-		SPECIALISED TESTING
-		validatingCheckBox("SPECIALISED TESTING [ API, Performance Testing, Mobile Testing etc.] (Stream1)", "Specialized Testing  [ API, Performance Testing, Mobile Testing ]", values.get("Specialized Testing  [ API, Performance Testing, Mobile Testing ]"));
-		
-		Defect Management
-		validatingCheckBox("Defect Management", "Defect Management", values.get("Defect Management"));
-		
-		Team Management
-		checkReportingSkills("Team Management", "Collaboration", values.get("Collaboration"));
-		checkReportingSkills("Team Management", "Engagement", values.get("Engagement"));
-		checkReportingSkills("Team Management", "Motivation", values.get("Motivation"));
-		validatingCheckBox("Team Management", "Team Management", values.get("Team Management"));
-		
-		Test Management
-		validatingCheckBox("Test Management", "Test Management", values.get("Test Management"));
-		
-		Project and Delivery Management
-		validatingCheckBox("Project and Delivery Management", "Project and Delivery Management", values.get("Project and Delivery Management"));
-		checkReportingSkills("Project and Delivery Management", "Progress monitoring", values.get("Progress monitoring"));
-		checkReportingSkills("Project and Delivery Management", "Governance", values.get("Governance"));
-		
-		
-		Test Strategy and Planning
-		checkReportingSkills("Test Strategy and Planning", "Planning", values.get("Planning"));
-		validatingCheckBox("Test Strategy and Planning", "Test Strategy and Planning", values.get("Test Strategy and Planning"));
-		
-		Test Solutions (Pre Sales)
-		validatingCheckBox("Test Solutions (Pre Sales)", "Test Solutions (Pre Sales)", values.get("Test Solutions (Pre Sales)"));
-		checkReportingSkills("Test Solutions (Pre Sales)", "Estimation", values.get("Estimation"));
-		
-		Program Management
-		checkReportingSkills("Program Management", "Process modeling and Change Management Planning", values.get("Process modeling and Change Management Planning"));
-		validatingCheckBox("Program Management", "Project Management", values.get("Project Management"));
-		
-		OO Programming
-		validatingCheckBox("OO Programming", "OO Programming", values.get("OO Programming"));
-		checkReportingSkills("OO Programming", "Test scripting", values.get("Test scripting"));
-		checkReportingSkills("OO Programming", "Application Coding", values.get("Application Coding"));
-		
-		Software Design
-		checkReportingSkills("Software Design", "Application Design", values.get("Application Design"));
-		validatingCheckBox("Software Design", "Software Design", values.get("Software Design"));
-		
-		Knowledge of Multiple Tools (Build tools, Test frameworks)
-		checkReportingSkills("Knowledge of Multiple Tools (Build tools, Test frameworks)", "Test Architect", values.get("Test Architect"));
-		validatingCheckBox("Knowledge of Multiple Tools (Build tools, Test frameworks)", "Knowledge of Multiple Tools (Build tools, Test frameworks)", values.get("Knowledge of Multiple Tools (Build tools, Test frameworks)"));
-		
-		Solution Development
-		checkReportingSkills("Solution Development", "Test Automation Specialist", values.get("Test Automation Specialist"));
-		validatingCheckBox("Solution Development", "Solution Development", values.get("Solution Development"));
-		
-		Test Data Management and Database Skills
-		checkReportingSkills("Test Data Management and Database Skills", "Database Test Engineer", values.get("Database Test Engineer"));
-		Need to update
-		validatingCheckBox("Test Data Management and Database Skills", "Test Data Management and Database Skills", values.get("Test Data Management and Database Skills"));
-		
-		Levels of Automation
-		validatingCheckBox("Levels of Automation", "Levels of Automation", values.get("Levels of Automation"));
-		
-		checkReportingSkills("Rporting Skills", "Reporting Analyst", values.get("Reporting Analyst"));
-		
-		Service Engineering
-		checkReportingSkills("Service Engineering", "API Engineering", values.get("API Engineering"));
-		validatingCheckBox("Service Engineering", "Service Engineering", values.get("Service Engineering"));
-		
-		Performance Engineering
-		checkReportingSkills("Performance Engineering", "Performance Testing", values.get("Performance Testing"));
-		validatingCheckBox("Performance Engineering", "Performance Engineering", values.get("Performance Engineering"));
-		
-		Data Science and Testing Predictions
-		checkReportingSkills("Data Science and Testing Predictions", "Data Scientist", values.get("Data Scientist"));
-		checkReportingSkills("Data Science and Testing Predictions", "Data Visualization", values.get("Data Visualization"));
-		checkReportingSkills("Data Science and Testing Predictions", "Data Science and Testing Predictions", values.get("Data Science and Testing Predictions"));
-		
-		BUSINESS PROCESS KNOWLEDGE
-		checkReportingSkills("BUSINESS PROCESS KNOWLEDGE (Client specific/Product Specific)", "Process Owner", values.get("Process Owner"));
-		
-		Conceptual View of Domain
-		checkReportingSkills("Conceptual View of Domain", "Functional / Domain Consultant", values.get("Functional / Domain Consultant"));
-		validatingCheckBox("Conceptual View of Domain", "Conceptual View of Domain", values.get("Conceptual View of Domain"));
-		
-		Requirement Analysis and Influencing SCRUM
-		checkReportingSkills("Requirement Analysis and Influencing SCRUM", "Requirement Analysis and Influencing SCRUM", values.get("Requirement Analysis and Influencing SCRUM"));
-		checkReportingSkills("Requirement Analysis and Influencing SCRUM", "Business Analyst", values.get("Business Analyst"));
-		
-		Model Based Test Design
-		validatingCheckBox("Model Based Test Design", "Model Based Test Design", values.get("Model Based Test Design"));
-		
-		System.out.println("--------------------------------------");
-	
-	
-		System.out.println(userStreamOutputValuesIndividual.size());
-	*/	
-		writeValuesInExcel(userStreamOutputValuesIndividual,"Streamchange","new");
-		String employeeDetails=values.get("Employee ID")+"-"+values.get("Name");
-		writeValuesInExcel(values,employeeDetails,"existing");
 		
 	
 	}
 	
+	
+
 	
 	
 	public void flagAssessment(String topic,String selectedAnswers)
@@ -1149,8 +374,8 @@ public class ReadDataFromExcel {
 			String testcaseDesignintermediate="Design quality test cases with help from the available specification, user documentation, interviews/discussions, functional flows & operational flows;Demonstrated competency in reviewing test cases of peers and ensuring consistency and quality of test cases;Demonstrated proficiency in establishing test coverage and traceability";
 			String testcaseDesignBasic="Design quality test cases with help from the available specification, user documentation, interviews/discussions, functional flows & operational flows";
 			String testcaseDesignFlag=flagChecker(selectedAnswers,testcaseDesignAdvanced, testcaseDesignintermediate,testcaseDesignBasic, 5, 3, 1);
-			userStreamOutputValuesIndividual.put(topic, testcaseDesignFlag);
-			System.out.println("Topic - "+topic+"  Selected Ans -"+selectedAnswers+" Category -"+testcaseDesignFlag);	
+			userStreamOutputFlagsIndividual.put(topic, testcaseDesignFlag);
+			System.out.println("Topic - "+topic+"  Selected Ans - "+selectedAnswers+" Category - "+testcaseDesignFlag);	
 			break;
 			
 		case "Test Execution":
@@ -1158,8 +383,8 @@ public class ReadDataFromExcel {
 			String testExecutionintermediate="Execute end to end testing of the complete work flow;Perform extensive exploratory Adhoc/random testing based on experience and also help peers;Is compliant with test evidence documentation requirements for self & audit evidences for peers or other team members";
 			String testExecutionBasic="Execute testing based on Test Case specification;Perform limited testing based on experience;Is compliant with test evidence documentation requirements";
 			String testExecutionFlag=flagChecker(selectedAnswers,testExecutionAdvanced, testExecutionintermediate,testExecutionBasic, 4, 3, 3);
-			userStreamOutputValuesIndividual.put(topic, testExecutionFlag);
-			System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+testExecutionFlag);	
+			userStreamOutputFlagsIndividual.put(topic, testExecutionFlag);
+			System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+testExecutionFlag);	
 			break;
 		
 		case "STLC Tools":
@@ -1167,8 +392,8 @@ public class ReadDataFromExcel {
 			String STLCToolsintermediate="Knowledge of tools;Shares and publishes short notes on various tools across test life cycle;Uses tools for various activities such as test case writing, test execution, test management, reporting;Knowledge of the limitation of test execution and test management tools";
 			String STLCToolsBasic="Knowledge of tools;Uses tools for various activities such as test case writing, test execution, test management, reporting";
 			String STLCToolsFlag=flagChecker(selectedAnswers,STLCToolsAdvanced, STLCToolsintermediate,STLCToolsBasic, 7, 4, 2);
-			userStreamOutputValuesIndividual.put(topic, STLCToolsFlag);
-			System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+STLCToolsFlag);	
+			userStreamOutputFlagsIndividual.put(topic, STLCToolsFlag);
+			System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+STLCToolsFlag);	
 			break;
 	 
 		case "Test Automation Design":
@@ -1176,8 +401,8 @@ public class ReadDataFromExcel {
 			String testAutomationDesignintermediate="Demonstrated ability to use Test Automation Framework for writing new test cases and minor upgrades to the framework to support new features;Ability to adopt TDD, BDD, methods and integrate data, manual + automated testing in test case design;Ability to package test automation suites for execution;Ability to apply best practices such as audit trail, data independence, multithreading and reporting;Uses industry standard design standards to bring in overall productivity improvement, test case execution windows;Demonstrated ability to write optimized scripts and having knowledge to integrate with other tools";
 			String testAutomationDesignBasic="Familiar with using the Test Automation Framework for writing test cases;Demonstrated ability to independently maintain test cases for minor changes";
 			String testAutomationDesignFlag=flagChecker(selectedAnswers,testAutomationDesignAdvanced, testAutomationDesignintermediate,testAutomationDesignBasic, 8, 6, 2);
-			userStreamOutputValuesIndividual.put(topic, testAutomationDesignFlag);
-			System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+testAutomationDesignFlag);	
+			userStreamOutputFlagsIndividual.put(topic, testAutomationDesignFlag);
+			System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+testAutomationDesignFlag);	
 			break;
 			
 		 case "Test Automation Execution":
@@ -1186,8 +411,8 @@ public class ReadDataFromExcel {
 				String testAutomationExecutionintermediate="Ability to schedule and run hands-free and parallel tests and troubleshoot issues related to the same;Proficiency in modifying and executing test scripts based on changes to run plan;Ability to set up automation execution and ability to collect results as well as evidences and report them effectively";
 				String testAutomationExecutionBasic="Ability to launch and execute automation test cases and prepare and feed test data for the same;Proficiency in using the run plan and executing test script supported with evidence from projects;Demonstrated ability to make minor maintenance changes to the automation cases and execute based on the test progress and test results";
 				String testAutomationExecutionFlag=flagChecker(selectedAnswers,testAutomationExecutionAdvanced, testAutomationExecutionintermediate,testAutomationExecutionBasic, 4, 3, 3);
-				userStreamOutputValuesIndividual.put(topic, testAutomationExecutionFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+testAutomationExecutionFlag);	
+				userStreamOutputFlagsIndividual.put(topic, testAutomationExecutionFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+testAutomationExecutionFlag);	
 				break;
 			
 		 case "Domain/Product Knowledge":
@@ -1196,8 +421,8 @@ public class ReadDataFromExcel {
 				String domainKnowledgeintermediate="Is seen as a practitioner in the domain / product area and can work independently with no guidance, leading teams towards optimized test design and coverage independently";
 				String domainKnowledgeBasic="Fully trained on a Domain/Product area and can articulate concepts with clarity";
 				String domainKnowledgeFlag=flagChecker(selectedAnswers,domainKnowledgeAdvanced, domainKnowledgeintermediate,domainKnowledgeBasic, 2, 1, 1);
-				userStreamOutputValuesIndividual.put(topic, domainKnowledgeFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+domainKnowledgeFlag);	
+				userStreamOutputFlagsIndividual.put(topic, domainKnowledgeFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+domainKnowledgeFlag);	
 				break;
 			
 		 case "Defect Logging and Reporting":
@@ -1206,8 +431,8 @@ public class ReadDataFromExcel {
 				String defectLoggingintermediate="Aware of the blocked test cases (Test Funnel) due to defects;Demonstrated ability to review defects independently and filter out invalid defects";
 				String defectLoggingBasic="Ability to adopt a project tailored defect Tracking tool, maintains hygiene in entering details of defects with clarity and in accordance with defect life cycle and standards of the project.;Aware of the blocked test cases (Test Funnel) due to defects;Produces defect reports and knows status of defects of own work";
 				String defectLoggingFlag=flagChecker(selectedAnswers,defectLoggingAdvanced, defectLoggingintermediate,defectLoggingBasic, 3, 2, 3);
-				userStreamOutputValuesIndividual.put(topic, defectLoggingFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+defectLoggingFlag);	
+				userStreamOutputFlagsIndividual.put(topic, defectLoggingFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+defectLoggingFlag);	
 				break;
 				
 				
@@ -1217,8 +442,8 @@ public class ReadDataFromExcel {
 				String specializedTestingintermediate="Ability to perform testing for at least one type or multiple types of specialised testing using a tool or automate and ensure that all defects that can potentially arise in a given problem state can be adequately covered through various techniques";
 				String specializedTestingBasic="Knowledge of at least one specialized testing type, and ability to define test types for that testing type;Ability to perform testing for at least one type or multiple types of specialised testing using a tool or automate and ensure that all defects that can potentially arise in a given problem state can be adequately covered through various techniques";
 				String specializedTestingFlag=flagChecker(selectedAnswers,specializedTestingAdvanced, specializedTestingintermediate,specializedTestingBasic, 2, 1, 2);
-				userStreamOutputValuesIndividual.put(topic, specializedTestingFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+specializedTestingFlag);	
+				userStreamOutputFlagsIndividual.put(topic, specializedTestingFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+specializedTestingFlag);	
 				break;
 				
 		 case "Defect Management":
@@ -1227,8 +452,8 @@ public class ReadDataFromExcel {
 				String defectManagementintermediate="Establish and publish Defect Metrics supported with evidence from project execution;Perform Root Cause Analysis with successful outcomes;Demonstrated ability to manage Defect Review meetings effectively";
 				String defectManagementBasic="Has knowledge of Defect Management with no or limited experience of handling Defect Review calls and collating Metrics";
 				String defectManagementFlag=flagChecker(selectedAnswers,defectManagementAdvanced, defectManagementintermediate,defectManagementBasic, 6, 3, 1);
-				userStreamOutputValuesIndividual.put(topic, defectManagementFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+defectManagementFlag);	
+				userStreamOutputFlagsIndividual.put(topic, defectManagementFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+defectManagementFlag);	
 				break;
 				
 		 case "Team Management":
@@ -1237,8 +462,8 @@ public class ReadDataFromExcel {
 				String teamManagementintermediate="Understands importance of Team Dynamics. Creates a collaborative culture and empowers Delivery Teams;Ability to work on constructive actions from feedback in a manner that positively impact Stakeholders;Define team vision and goals and motivate team to progress towards the same;Ability to bring people together to form a motivated team;Ability to help create the right environment for a team to work in;Recognizes and deals with issues and conflicts;Structure the team in an optimal way depending on the situation";
 				String teamManagementBasic="Understands Team dynamics and works harmoniously with any team;Gathers feedback from team and Stakeholders at regular intervals and works on action items;Aware of team vision and motivates team to progress towards the same";
 				String teamManagementFlag=flagChecker(selectedAnswers,teamManagementAdvanced, teamManagementintermediate,teamManagementBasic, 9, 7, 3);
-				userStreamOutputValuesIndividual.put(topic, teamManagementFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+teamManagementFlag);	
+				userStreamOutputFlagsIndividual.put(topic, teamManagementFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+teamManagementFlag);	
 				break;
 			
 		 
@@ -1246,10 +471,10 @@ public class ReadDataFromExcel {
 			 
 				String testManagementAdvanced="Test Planning, Estimation, Monitoring and Control;Ability to perform Test Management for a small project or independently for a large single project or multiple projects;Defines a run plan given a set of tests and a go-live target;Ability to share and implement best practices in Test Management;Ability to coach and set up test dashboards and bring insights to stakeholders at CXO levels";
 				String testManagementintermediate="Test Planning, Estimation, Monitoring and Control;Ability to perform Test Management for a small project or independently for a large single project or multiple projects;Defines a run plan given a set of tests and a go-live target";
-				String testManagementBasic="Test Planning, Estimation, Monitoring and Control;Ability to perform Test Management for a small project or independently for a large single project or multiple projects;Defines a run plan given a set of tests and a go-live target";
-				String testManagementFlag=flagChecker(selectedAnswers,testManagementAdvanced, testManagementintermediate,testManagementBasic, 5, 3, 3);
-				userStreamOutputValuesIndividual.put(topic, testManagementFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+testManagementFlag);	
+				String testManagementBasic="";
+				String testManagementFlag=flagChecker(selectedAnswers,testManagementAdvanced, testManagementintermediate,testManagementBasic, 5, 3, 0);
+				userStreamOutputFlagsIndividual.put(topic, testManagementFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+testManagementFlag);	
 				break;
 
 		 case "Project and Delivery Management":
@@ -1258,8 +483,8 @@ public class ReadDataFromExcel {
 				String projectAndDeliveryManagementintermediate="Ability to apply Frameworks and Methodologies (e.g. Agile);Ability to handle Resource Planning and Scheduling;Ability to actively address internal and external risks, issues and dependencies including where ownership exists outside the team;Ability to manage multiple projects;Ability to define and set up metrics of interest and show improvements on metrics and monitoring;Ability to define and execute Project Governance with senior internal and external Stakeholders - with regular meetings";
 				String projectAndDeliveryManagementBasic="Trained in Project Management concepts;Ability to support a Lead or Manager to perform Delivery Management;Ability to handle Resource Planning and Scheduling;Ability to review and track projects to completion;Ability to actively address internal and external risks, issues and dependencies including where ownership exists outside the team;Ability to measure, report and trend metrics on project over releases/milestones;Ability to provide Project Governance reports effectively and on time";
 				String projectAndDeliveryManagementFlag=flagChecker(selectedAnswers,projectAndDeliveryManagementAdvanced, projectAndDeliveryManagementintermediate,projectAndDeliveryManagementBasic, 4, 6, 7);
-				userStreamOutputValuesIndividual.put(topic, projectAndDeliveryManagementFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+projectAndDeliveryManagementFlag);	
+				userStreamOutputFlagsIndividual.put(topic, projectAndDeliveryManagementFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+projectAndDeliveryManagementFlag);	
 				break;
 			 
 		 case "Test Strategy and Planning":		
@@ -1268,8 +493,8 @@ public class ReadDataFromExcel {
 				String testStrategyAndPlanningintermediate="Recommend multiple strategies based on needs and complexities of the project;Understands the environment and is able to prioritise the most important or highest value tasks;Ability to manage complex internal and external dependencies;Ability to eliminate blockers that affect the plan and develop a plan for difficult situations";
 				String testStrategyAndPlanningBasic="Understand Test Strategy and define the Test Strategy independently and plan the testing for a project";
 				String testStrategyAndPlanningFlag=flagChecker(selectedAnswers,testStrategyAndPlanningAdvanced, testStrategyAndPlanningintermediate,testStrategyAndPlanningBasic, 2, 4, 1);
-				userStreamOutputValuesIndividual.put(topic, testStrategyAndPlanningFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+testStrategyAndPlanningFlag);	
+				userStreamOutputFlagsIndividual.put(topic, testStrategyAndPlanningFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+testStrategyAndPlanningFlag);	
 				break;
 				
 			
@@ -1279,8 +504,8 @@ public class ReadDataFromExcel {
 				String testSolutionsintermediate="Ability to support development of solution for RFP response;Ability to individually handle Test Solutions and responses for proposals for a single project or multiple projects;Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date;Ability to  sequence test cycles/phases in line with customer schedule, plan effort and schedule along with scope boundaries";
 				String testSolutionsBasic="Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date;Ability to provide test scoping through functional breakdown, test cases sizing and test cycles";
 				String testSolutionsFlag=flagChecker(selectedAnswers,testSolutionsAdvanced, testSolutionsintermediate,testSolutionsBasic, 5, 5, 3);
-				userStreamOutputValuesIndividual.put(topic, testSolutionsFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+testSolutionsFlag);	
+				userStreamOutputFlagsIndividual.put(topic, testSolutionsFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+testSolutionsFlag);	
 				break;		
 				
 		 case "Program Management":
@@ -1289,8 +514,8 @@ public class ReadDataFromExcel {
 				String programManagementintermediate="Ability to setup uniform processes to monitor and handle change. Ensure no scope creep and monetize changes;Ability to apply  superior analytical skills;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures;Ability to continuously focus on Risk Management and include contingency & mitigation planning;Ability to focus on Governance to achieve desired results in the program;Ability to think Big Picture and set the vision";
 				String programManagementBasic="Ability to impose a common set of processes to report progress, change and uncertainty;Ability to adjust plans based on performance changes;Ensures Project Managers use the correct Testing life-cycle for the characteristics of the products they have to test;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures";
 				String programManagementFlag=flagChecker(selectedAnswers,programManagementAdvanced, programManagementintermediate,programManagementBasic, 10, 7, 5);
-				userStreamOutputValuesIndividual.put(topic, programManagementFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+programManagementFlag);	
+				userStreamOutputFlagsIndividual.put(topic, programManagementFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+programManagementFlag);	
 				break;
 				
 		 case "OO Programming":
@@ -1299,8 +524,8 @@ public class ReadDataFromExcel {
 				String oOProgrammingintermediate="Uses code configuration management and tools (git/stash/vss etc.) in the most efficient way possible - No code on personal devices;Sets up standards and accelerators for development;Demonstrated ability to perform Code Reviews;Ability to implement best practices in programming;Ability to design and write code independently with code metrics and coding practices intact;Ability to build code aligned to OO concepts and layered to support business and data layers";
 				String oOProgrammingBasic="Trained or has knowledge in OO Programming and Design;Uses code configuration management and tools (git/stash/vss etc.) in the most efficient way possible - No code on personal devices;Understands Test Code and ability to contribute with help of Low design with coding practices intact;Creates and understands class diagrams and implements the same in code";
 				String oOProgrammingFlag=flagChecker(selectedAnswers,oOProgrammingAdvanced, oOProgrammingintermediate,oOProgrammingBasic, 4, 6, 4);
-				userStreamOutputValuesIndividual.put(topic, oOProgrammingFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+oOProgrammingFlag);	
+				userStreamOutputFlagsIndividual.put(topic, oOProgrammingFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+oOProgrammingFlag);	
 				break;				
 			 
 		 case "Software Design":
@@ -1309,8 +534,8 @@ public class ReadDataFromExcel {
 				String softwareDesignintermediate="Ability to create DB designs, Class diagrams and other UML designs to represent flow of information;Ability to create and package re-usability software assets for more than one problem / program and promote such re-use;Coaches team on best practices for software design";
 				String softwareDesignBasic="Ability to understand UML concepts, design diagrams and code as per design specifications";
 				String softwareDesignFlag=flagChecker(selectedAnswers,softwareDesignAdvanced, softwareDesignintermediate,softwareDesignBasic, 4, 3, 1);
-				userStreamOutputValuesIndividual.put(topic, softwareDesignFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+softwareDesignFlag);	
+				userStreamOutputFlagsIndividual.put(topic, softwareDesignFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+softwareDesignFlag);	
 				break;			
 				
 		 case "Knowledge of Multiple Tools (Build tools, Test frameworks)":
@@ -1319,8 +544,8 @@ public class ReadDataFromExcel {
 				String knowledgeofMultipleToolsintermediate="Ability to understand the limitations of the tools";
 				String knowledgeofMultipleToolsBasic="Has knowledge of what tools are used for Frameworks, Build and Scripting";
 				String knowledgeofMultipleToolsFlag=flagChecker(selectedAnswers,knowledgeofMultipleToolsAdvanced, knowledgeofMultipleToolsintermediate,knowledgeofMultipleToolsBasic, 3, 1, 1);
-				userStreamOutputValuesIndividual.put(topic, knowledgeofMultipleToolsFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+knowledgeofMultipleToolsFlag);
+				userStreamOutputFlagsIndividual.put(topic, knowledgeofMultipleToolsFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+knowledgeofMultipleToolsFlag);
 				break;
 				
 		 case "Solution Development":
@@ -1329,8 +554,8 @@ public class ReadDataFromExcel {
 				String solutionDevelopmentintermediate="Contributes individually to development of Automation Framework;Ability to debug all failures independently without any help";
 				String solutionDevelopmentBasic="Ability to make limited contribution to Framework Development with support";
 				String solutionDevelopmentFlag=flagChecker(selectedAnswers,solutionDevelopmentAdvanced, solutionDevelopmentintermediate,solutionDevelopmentBasic, 3, 2, 1);
-				userStreamOutputValuesIndividual.put(topic, solutionDevelopmentFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+solutionDevelopmentFlag);
+				userStreamOutputFlagsIndividual.put(topic, solutionDevelopmentFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+solutionDevelopmentFlag);
 				break;	
 			 
 		 case "Test Data Management and Database Skills":
@@ -1339,8 +564,8 @@ public class ReadDataFromExcel {
 				String testDataManagementAndDatabaseSkillsintermediate="Automation of Test Data Management and planning to provision test data;Expert in SQL with database design skills;Has strong Data Management/Database expertise combined with test data definition and specification techniques and data privacy ability";
 				String testDataManagementAndDatabaseSkillsBasic="Knowledge of basic database and SQL skills with no or limited experience on Test Data Management;Expert in SQL with database design skills";
 				String testDataManagementAndDatabaseSkillsFlag=flagChecker(selectedAnswers,testDataManagementAndDatabaseSkillsAdvanced, testDataManagementAndDatabaseSkillsintermediate,testDataManagementAndDatabaseSkillsBasic, 2, 3, 2);
-				userStreamOutputValuesIndividual.put(topic, testDataManagementAndDatabaseSkillsFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+testDataManagementAndDatabaseSkillsFlag);
+				userStreamOutputFlagsIndividual.put(topic, testDataManagementAndDatabaseSkillsFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+testDataManagementAndDatabaseSkillsFlag);
 				break;
 
 				
@@ -1348,10 +573,10 @@ public class ReadDataFromExcel {
 			 
 			 	String levelsofAutomationAdvanced="Demonstrated ability to automate GUI, API and Database layers;Demonstrated ability to automate at multiple layers outside of GUI and enable multi technology integration for the framework";
 				String levelsofAutomationintermediate="Demonstrated ability to automate GUI, API and Database layers";
-				String levelsofAutomationBasic="Demonstrated ability to automate GUI, API and Database layers";
-				String levelsofAutomationFlag=flagChecker(selectedAnswers,levelsofAutomationAdvanced, levelsofAutomationintermediate,levelsofAutomationBasic, 2, 1, 1);
-				userStreamOutputValuesIndividual.put(topic, levelsofAutomationFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+levelsofAutomationFlag);
+				String levelsofAutomationBasic="";
+				String levelsofAutomationFlag=flagChecker(selectedAnswers,levelsofAutomationAdvanced, levelsofAutomationintermediate,levelsofAutomationBasic, 2, 1, 0);
+				userStreamOutputFlagsIndividual.put(topic, levelsofAutomationFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+levelsofAutomationFlag);
 				break;
 				
 		 case "Reporting Skills":
@@ -1360,8 +585,8 @@ public class ReadDataFromExcel {
 				String reportingSkillsintermediate="Demonstrated ability to generate reports using HTML, Extent or any fit for purpose tools;Ability to create highly intuitive visual and data reports that do not require human interpretation";
 				String reportingSkillsBasic="Trained in HTML reporting and SQL based data querying";
 				String reportingSkillsFlag=flagChecker(selectedAnswers,reportingSkillsAdvanced, reportingSkillsintermediate,reportingSkillsBasic, 2, 2, 1);
-				userStreamOutputValuesIndividual.put(topic, reportingSkillsFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+reportingSkillsFlag);
+				userStreamOutputFlagsIndividual.put(topic, reportingSkillsFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+reportingSkillsFlag);
 				break;
 				
 		 case "Service Engineering":
@@ -1370,8 +595,8 @@ public class ReadDataFromExcel {
 				String serviceEngineeringintermediate="Knowledge of service/micro-service/API and Application Architecture, Test infrastructures, configurations and environments;Ability to contribute to service level tests - through automated test design from specifications;Ability to integrate hands free Test Automation in CI/CD pipeline";
 				String serviceEngineeringBasic="Knowledge of  SWAGGER/ WSDL, XML concepts and file passing (JSON/XML );Knowledge of Service Automation concepts";
 				String serviceEngineeringFlag=flagChecker(selectedAnswers,serviceEngineeringAdvanced, serviceEngineeringintermediate,serviceEngineeringBasic, 4, 3, 2);
-				userStreamOutputValuesIndividual.put(topic, serviceEngineeringFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+serviceEngineeringFlag);
+				userStreamOutputFlagsIndividual.put(topic, serviceEngineeringFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+serviceEngineeringFlag);
 				break;
 			 
 			 
@@ -1381,8 +606,8 @@ public class ReadDataFromExcel {
 				String performanceEngineeringintermediate="Ability to analyse performance test result to identify bottlenecks (use advanced SQL skills);Ability to identify transactions and workflows and calculate workload TPS goals and rates;Ability to use and customize monitoring tools helps in identifying the server side bottlenecks in performance testing";
 				String performanceEngineeringBasic="Knowledge of Performance test and Engineering and ability to apply Scripting skills to build load tests";
 				String performanceEngineeringFlag=flagChecker(selectedAnswers,performanceEngineeringAdvanced, performanceEngineeringintermediate,performanceEngineeringBasic, 2, 3, 1);
-				userStreamOutputValuesIndividual.put(topic, performanceEngineeringFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+performanceEngineeringFlag);
+				userStreamOutputFlagsIndividual.put(topic, performanceEngineeringFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+performanceEngineeringFlag);
 				break;
 				
 		 case "Data Science and Testing Predictions":
@@ -1391,8 +616,8 @@ public class ReadDataFromExcel {
 				String dataScienceandTestingPredictionsintermediate="Ability to leverage Data Analytics, Machine Learning and build an adaptive framework dynamically to optimizes these assets based on lifecycle data such as: build failure trends, defect detection and escape patterns, root causes of defects;Ability to create various engineering dashboards from data that is sourced real time or in batch mode";
 				String dataScienceandTestingPredictionsBasic="Trained in data/predictive analysis with limited or no practical experience;Ability to pull out data for various measures in a hands-free and repeatability manner and present visuals";
 				String dataScienceandTestingPredictionsFlag=flagChecker(selectedAnswers,dataScienceandTestingPredictionsAdvanced, dataScienceandTestingPredictionsintermediate,dataScienceandTestingPredictionsBasic, 3, 2, 2);
-				userStreamOutputValuesIndividual.put(topic, dataScienceandTestingPredictionsFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+dataScienceandTestingPredictionsFlag);
+				userStreamOutputFlagsIndividual.put(topic, dataScienceandTestingPredictionsFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+dataScienceandTestingPredictionsFlag);
 				break;
 			 
 		 case "Business Process Knowledge (Client specific/Product Specific)":
@@ -1401,8 +626,8 @@ public class ReadDataFromExcel {
 				String businessProcessKnowledgeintermediate="Knowledge of complete operations of a particular division (e.g. Cards, Wealth Management, Corporate Banking, Retail Banking) and can apply the knowledge for testing";
 				String businessProcessKnowledgeBasic="Knowledge of workflows limited to one function in the domain (e.g. Retail/Cards)";
 				String businessProcessKnowledgeFlag=flagChecker(selectedAnswers,businessProcessKnowledgeAdvanced, businessProcessKnowledgeintermediate,businessProcessKnowledgeBasic, 1, 1, 1);
-				userStreamOutputValuesIndividual.put(topic, businessProcessKnowledgeFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+businessProcessKnowledgeFlag);
+				userStreamOutputFlagsIndividual.put(topic, businessProcessKnowledgeFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+businessProcessKnowledgeFlag);
 				break;
 				
 		 case "Conceptual View of Domain":
@@ -1411,8 +636,8 @@ public class ReadDataFromExcel {
 				String conceptualViewofDomainintermediate="Ability to represent the domain as interacting sequence of activities and actors, such as a swim lane, conceptual map, function matrix etc.;Ability to segregate scenarios and isolate data needs, PIIs and key actors in a Domain;Ability to guide prioritization of testing within a domain";
 				String conceptualViewofDomainBasic="Understands the domain as interacting sequence of activities and actors, such as a swim lane, conceptual map, function matrix etc;Ability to guide prioritization of testing within a domain";
 				String conceptualViewofDomainFlag=flagChecker(selectedAnswers,conceptualViewofDomainAdvanced, conceptualViewofDomainintermediate,conceptualViewofDomainBasic, 3, 3, 2);
-				userStreamOutputValuesIndividual.put(topic, conceptualViewofDomainFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+conceptualViewofDomainFlag);
+				userStreamOutputFlagsIndividual.put(topic, conceptualViewofDomainFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+conceptualViewofDomainFlag);
 				break;
 			 
 		 case "Requirement Analysis and Influencing SCRUM":
@@ -1421,8 +646,8 @@ public class ReadDataFromExcel {
 				String requirementAnalysisandInfluencingSCRUMintermediate="Ability to establish minimum acceptance criteria for requirements and development cycles and orchestrate test & development teams towards consistent velocity of team;Demonstrated ability to influence Scrum team in the areas of test estimation, test prioritization and sequencing";
 				String requirementAnalysisandInfluencingSCRUMBasic="Trained in Requirements Analysis and Agile/Scrum Concepts;Ability to analyse requirements for a single project and translate to the Project Team";
 				String requirementAnalysisandInfluencingSCRUMFlag=flagChecker(selectedAnswers,requirementAnalysisandInfluencingSCRUMAdvanced, requirementAnalysisandInfluencingSCRUMintermediate,requirementAnalysisandInfluencingSCRUMBasic, 3, 2, 2);
-				userStreamOutputValuesIndividual.put(topic, requirementAnalysisandInfluencingSCRUMFlag);
-				System.out.println("Topic - "+topic+"	Selected Ans -"+selectedAnswers+"Category -"+requirementAnalysisandInfluencingSCRUMFlag);
+				userStreamOutputFlagsIndividual.put(topic, requirementAnalysisandInfluencingSCRUMFlag);
+				System.out.println("Topic - "+topic+"	Selected Ans - "+selectedAnswers+"Category - "+requirementAnalysisandInfluencingSCRUMFlag);
 				break;
 				
 		 case "Model Based Test Design":
@@ -1431,15 +656,15 @@ public class ReadDataFromExcel {
 				String modelBasedTestDesignintermediate="Ability to analyse and specify requirements in a structured manner and model the behavioural flow using the model based technique or tool;Ability to apply and drive Model Based test design;Ability to prepare Test Basis, Transaction Matrix and Scenario Matrix with help";
 				String modelBasedTestDesignBasic="Knowledge of model based testing and development of requirements in the form of models (e.g. Behavioural model, Test Basis etc.);Knowledge on Test Basis Methodology and design test cases from the Scenario Matrix and Transaction Matrix";
 				String modelBasedTestDesignFlag=flagChecker(selectedAnswers,modelBasedTestDesignAdvanced, modelBasedTestDesignintermediate,modelBasedTestDesignBasic, 5, 3, 2);
-				userStreamOutputValuesIndividual.put(topic, modelBasedTestDesignFlag);
-				System.out.println("Topic - "+topic+"Selected Ans -"+selectedAnswers+"Category -"+modelBasedTestDesignFlag);
+				userStreamOutputFlagsIndividual.put(topic, modelBasedTestDesignFlag);
+				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+modelBasedTestDesignFlag);
 				break;
 			 
 		}
 	}
 	
 	
-	public void writeValuesInExcel(Map<String,String> result,String sheetNameDetails,String exceltype) throws Exception
+	public void writeValuesInExcel(Map<String,Map<String,String>> result,String sheetNameDetails,String exceltype) throws Exception
 	{
 		XSSFWorkbook output;
 		FileInputStream input;
@@ -1453,9 +678,9 @@ public class ReadDataFromExcel {
 			output=new XSSFWorkbook(input);
 		}
 		XSSFSheet sheetName=output.createSheet(sheetNameDetails);
-		Set<String> rowValues=result.keySet();
+		Set<String> rowValues=userStreamOutputFlagsIndividual.keySet();
 		XSSFRow row0=sheetName.createRow(0);
-		XSSFRow row1=sheetName.createRow(1);
+		XSSFRow row1;
 		int detailsCellNumber=0;
 		int headercellNumber=0;
 		XSSFCellStyle style=output.createCellStyle();
@@ -1470,10 +695,21 @@ public class ReadDataFromExcel {
 			cell.setCellStyle(style);
 			headercellNumber++;
 		}
-		
-   for (Entry<String, String> enterset : result.entrySet()) {	
+		int index=1;
+   for (Entry<String, Map<String,String>> enterset : result.entrySet()) {	
 
-	   row1.createCell(detailsCellNumber++).setCellValue(enterset.getValue());	
+	   Map<String,String> tempExeMap=new LinkedHashMap<String,String>();
+	   tempExeMap=enterset.getValue();
+	   row1=sheetName.createRow(index);
+	   for(Entry<String, String> individual:tempExeMap.entrySet())
+	   {
+		  
+			  row1.createCell(detailsCellNumber++).setCellValue(individual.getValue());  
+		  
+		      
+	   }
+	   detailsCellNumber=0;
+	   index++;	
 }	
 	
 
@@ -1488,12 +724,20 @@ outputStream.close();
 
 		ReadDataFromExcel excel=new ReadDataFromExcel();
 		excel.updateExcelValuesInMap(excel.userStramValues);
-		excel.verifyFlags(excel.userStramValues);
-		System.out.println(excel.userStreamOutputValuesIndividual.size());
-		//values.get("End to End Testing");
-			
 		
-		
+		for (Entry<String, Map<String,String>> mapValues : excel.userStramValues.entrySet()) 
+		{
+			String name=mapValues.getValue().get("Name")+mapValues.getValue().get("Employee ID");
+			excel.verifyFlags(mapValues.getValue());
+			excel.userStreamOutputValuesAll.put(name, excel.userStreamOutputFlagsIndividual);
+			excel.userStreamSelectedAll.put(name, excel.userStreamSelectedIndividual);
+								
+		}
+		excel.writeValuesInExcel(excel.userStreamOutputValuesAll, "StreamChange", "new");
+		excel.writeValuesInExcel(excel.userStreamSelectedAll, "SelectedValues", "existing");
 	}
 
+	
+	
+	
 }
