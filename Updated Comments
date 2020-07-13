@@ -1,0 +1,160 @@
+BASIC
+---------------------------------------------------------------------------------------------------------------------------
+
+STLC(Issue with trailing space)
+Knowledge of tools
+
+
+Test Automation Execution
+Actual - Sustenance/Maintenance
+Expected - Sustenance/Maintainence
+
+
+Team Management
+These fields in excel - Stake holder Engagement,Vision & Goals
+
+Program Management
+Actual -Process modeling and Change Management Planning
+Expected - Processes modeling and Change Management Planning
+
+
+
+Defect Logging and Reporting
+
+Expected -Produces defect reports and knows status of defects of own work
+Actual - Has knowledge of Defect Management with no or limited experience of handling Defect Review calls and collating Metrics
+
+Defect Management (Issue with trailing space)
+Has knowledge of Defect Management with no or limited experience of handling Defect Review calls and collating Metrics;
+
+Service Engineering (Issue with trailing space)
+Knowledge of Service Automation concepts;
+
+
+
+Data Science and Testing Predictions
+Actual - Ability to pull out data for various measures in a hands-free and repetition manner and present visuals
+Expected - Ability to pull out data for various measures in a hands-free and repeatability manner and present visuals
+
+
+Requirement Analysis and Influencing SCRUM (Issue with trailing space)
+Trained in Requirements Analysis and Agile/Scrum Concepts
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+Intermediate
+
+
+STLC(Issue with trailing space)
+Knowledge of tools
+
+Test Automation Execution
+Actual - Sustenance/Maintenance
+Expected - Sustenance/Maintainence
+
+
+Defect Logging and Reporting
+Expected - Demonstrated ability to review defects independently and filter out invalid defects
+Actual - Demonstrated ability to manage Defect Review meetings effectively
+
+
+Team Management
+These fields in excel - Stake holder Engagement,Vision & Goals
+
+
+Test Strategy and Planning
+
+Expected - Recommend multiple strategies based on needs and complexities of the project;Understands the environment and is able to prioritise the most important or highest value tasks;Ability to manage complex internal and external dependencies;Ability to eliminate blockers that affect the plan and develop a plan for difficult situations
+
+Actual - Option Recommend multiple strategies based on needs and complexities of the project;Ability to eliminate blockers that affect the plan and develop a plan for difficult situations
+
+
+
+Test Solutions (Pre Sales)
+
+Actual
+Ability to individually handle Test Solutions and responses for proposals for a single project or multiple projects;Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date;Ability to  sequence test cycles/phases in line with customer schedule, plan effort and schedule along with scope boundaries
+
+Expected
+Ability to support development of solution for RFP response;Ability to individually handle Test Solutions and responses for proposals for a single project or multiple projects;Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date;Ability to  sequence test cycles/phases in line with customer schedule, plan effort and schedule along with scope boundaries
+
+
+
+Program Management (Question Name)
+Actual -Process modeling and Change Management Planning
+Expected - Processes modeling and Change Management Planning
+
+
+
+OO Programming(Issue with trailing space)
+Ability to implement best practices in programming
+
+
+Reporting Skills
+
+Actual
+Option Demonstrated ability to generate reports using HTML, Extent or any fit for purpose tools;Ability to create highly intuitive visual and data reports that do not require human interpretation
+
+Expected
+Demonstrated ability to generate reports using HTML, Extent or any fit for purpose tools;Ability to create highly intuitive visual and data reports that do not require human interpretation
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+Advanced
+
+STLC Tools (Issue with trailing space)
+Knowledge of tools
+
+Test Automation Execution
+Actual - Sustenance/Maintenance
+Expected - Sustenance/Maintainence
+
+
+Defect Logging and Reporting
+
+Actual
+
+Demonstrated ability to perform Defect Triage and run Defect Triage and RCA meetings effectively with Stakeholders;Aware of the blocked test cases (Test Funnel) due to defects;Establish and publish Defect Metrics supported with evidence from project execution;Perform Root Cause Analysis with successful outcomes;Demonstrated ability to manage Defect Review meetings effectively;Ability to recommend and document best practices in Defect Management;Ability to automate defect metrics collection and plot various defect based process improvements;Ability to tie down high defect areas to project risk and plan for adequate risk coverage through increase of test coverage;
+
+
+Expected
+Demonstrated ability to perform Defect Triage and run Defect Triage and RCA meetings effectively with Stakeholders;Aware of the blocked test cases (Test Funnel) due to defects;Ability to analyse and report the data extracted from a Defect Tracking tool
+
+
+Team Management
+These fields in excel - Stake holder Engagement,Vision & Goals
+
+
+Test Solutions (Pre Sales)
+
+Actual
+Ability to individually handle Test Solutions and responses for proposals for a single project or multiple projects;Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date;Ability to conduct effective and compelling proposal walkthroughs leading towards conversion;Provides costing, schedule and optimization solutions for proposals and supports in proposal defense
+
+Expected
+Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date;Ability to provide test scoping through functional breakdown, test cases sizing and test cycles
+
+
+Program Management (Question Name)
+
+Actual -Process modeling and Change Management Planning
+Expected - Processes modeling and Change Management Planning
+
+
+OO Programming (Issue with trailing space)
+
+Ability to implement best practices in programming ;
+
+
+Knowledge of Multiple Tools (Build tools, Test frameworks)  (Issue with trailing space)
+Ability to conceptualize an integrated platform using the tools ;
+
+
+
+Data Science and Testing Predictions
+
+Actual
+Ability to create or tweak predictive analytics models (test and improve them using the life-cycle data to arrive at testing predictions);Ability to create visuals to derive interesting insights and formulate various hypothesis based data testing;Coaches team to sustain and scale this capability
+
+Expected
+Ability to create or tweak predictive analytics models (test and improve them using the lifecycle data to arrive at testing predictions);Ability to create visuals to derive interesting insights and formulate various hypothesis based data testing;Coaches team to sustain and scale this capability
+
+
