@@ -21,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.testng.Assert;
+import org.testng.collections.CollectionUtils;
 
 
 
@@ -101,6 +102,7 @@ public class ReadDataFromExcel {
 		List<String> arrayList=new ArrayList<String>();
 		String[] spliedArray=value.split(";");
 		arrayList.addAll(Arrays.asList(spliedArray));
+		arrayList.replaceAll(String::trim);
 		return arrayList;
 		
 		
@@ -736,7 +738,6 @@ outputStream.close();
 		excel.writeValuesInExcel(excel.userStreamOutputValuesAll, "StreamChange", "new");
 		excel.writeValuesInExcel(excel.userStreamSelectedAll, "SelectedValues", "existing");
 	}
-
 	
 	
 	
