@@ -1,0 +1,201 @@
+Environment setup 
+Download and install Java
+Setup Java Environment
+Download and install Eclipse
+How to use Eclipse
+Basic Java Program
+Compile and run a Java program
+Understanding console output
+Installing/Configuring Maven
+Creating Maven Project
+Importing Maven Project into Eclipse
+What is POM.xml?
+Adding Dependencies to POM.xml
+Adding selenium, POI related maven dependencies 
+
+Java Basics
+Java Variables and Data Types
+Java Packages
+Access Modifiers
+Java Operators
+Conditional statements 
+Loops (for loop, for each, while loop, do while)
+switch statement
+Break and continue
+Arrays
+Single Dimensional array
+Double Dimensional array
+String Class
+String methods
+Date and Time functions
+
+
+
+
+
+
+
+
+Java OOPS Concepts
+Classes and Objects
+Java methods
+Passing parameters to the methods
+Call by value and call by reference
+Java Constructor
+Method Overloading
+Constructor Overloading
+this keyword
+Static variables and methods
+Java Inheritance
+Method Overriding
+super keyword
+final keyword
+Java Interfaces
+Exception Handling
+Array List
+Hash Map
+JDBC
+Read / Write values from property file
+
+Selenium Webdriver
+Type of drivers 
+Locators in Selenium
+Types of Locators - name, id,cssSelector & Xpath
+Difference Between Absolute And Relative Xpath
+Writing Xpath
+Built-in functions in XPath
+Handling Dynamic elements using Xpath
+WebDriver commands
+Browser commands
+Close and Quit
+Get commands
+get
+getTitle
+PageSource
+getCurrentURL
+getWindowHandle()
+getWindowHandles()
+Navigation commands
+Conditional commands
+isDisplayed
+isEnabled
+isSelected
+Waits
+Implicit, Explicit and Fluent Waits
+Page Load Time
+Handling Web Elements
+Textbox/Input box
+Web Button
+Radio Button
+Checkbox
+Dropdown box/Combo box
+Links
+Broken Links
+Alerts/Popups
+Iframes
+Browser windows
+Date Picker
+Web Tables
+Working with Web Table with Pagination
+Scroll Web page
+Mouse Hover
+Mouse double click
+Mouse right click
+Drag and Drop
+Slider
+Resizing
+Tooltips
+Key Down and KeyPress
+Keyboard Actions
+Handling AJAX Calls in Webdriver
+Sikuli integration with Selenium
+Upload Files
+Download Files
+Handling cookies
+Desired Capabilities in Selenium
+Browser Profiles
+Selenium Headless Browser Testing
+Chrome headless
+HTMLUnitDriver
+Java script executor
+Robot class functions 
+
+ Data Driven Testing
+Usage of Apache POI API
+Read data from Excel file
+Write data into Excel file
+Excel Utilities Class
+Data Driven testing using Microsoft Excel
+Data Driven Testing using Database
+Data Driven Testing using Java Hash Map
+TestNG Framework
+TestNg Introduction and Advantages
+Configuring TestNg in Project/Eclipse
+How to write TestNG Test case
+TestNg annotations
+Understanding testng.xml
+TestNG Report
+Prioritizing tests
+dependsOnMethods
+Skipping tests
+Grouping methods
+TestNG batch testing
+How to Parameterize Tests
+Passing parameters using xml
+Parallel testing
+Data Provider
+TestNG Listeners
+Extent reports
+Capturing screenshots
+Advanced Concepts
+Log4j for logging
+Page Object Model - Page Factory
+Selenium Grid
+What is Selenium Grid?
+When to Use Selenium Grid?
+What is a Hub and Node?
+How to Install and Use Grid?
+Designing Test Scripts That Can Run on the Grid
+Running a Test Case on the Grid
+Continuous Integration (CI) Maven, Jenkins and GIT
+What is Continues Integration?
+Continuous Integration Tools
+Download and install Jenkins
+Maven integration with Jenkins
+Run selenium test scripts through Jenkins
+Downloading and Installing GIT
+Working with GITHUB
+Upload project to GITHUB
+
+Cucumber BDD Framework
+Cucumber Introduction
+Set Up Cucumber with Eclipse
+Cucumber Basics
+Test Scenario,Feature File, Step definitions
+JUnit Test Runner Class options
+Gherkin Keywords
+Data Driven Testing
+Scenarios outline & Examples
+Data table
+Cucumber Tags
+Cucumber Hooks
+
+
+Reference
+
+
+Free Courses
+https://testautomationu.applitools.com/learningpaths.html?id=web-ui-java-path 
+https://testautomationu.applitools.com/java-programming-course/ 
+https://testautomationu.applitools.com/selenium-webdriver-tutorial-java/ 
+https://testautomationu.applitools.com/web-element-locator-strategies/ 
+https://testautomationu.applitools.com/introduction-to-testng/ 
+https://app.pluralsight.com/library/courses/automated-web-testing-selenium-webdriver-java/table-of-contents 
+TestNG - https://app.pluralsight.com/library/courses/testng-getting-started/table-of-contents 
+Maven Fundamentals - https://app.pluralsight.com/library/courses/maven-fundamentals/table-of-contents 
+Paid Courses
+https://www.udemy.com/course/selenium-real-time-examplesinterview-questions/ 
+https://www.udemy.com/course/automate-tests-using-selenium-webdriver-with-java-cucumber/ 
+https://www.udemy.com/course/selenium-webdriver-page-objects/ 
+https://www.udemy.com/course/selenium-tutorials/  - QA A
+https://www.udemy.com/course/learn-selenium-with-java-live-project/
