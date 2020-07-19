@@ -21,7 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.testng.Assert;
-import org.testng.collections.CollectionUtils;
+
 
 
 
@@ -95,8 +95,7 @@ public class ReadDataFromExcel {
 	
 	
 	
-	
-	
+
 	public List<String> splitValue(String value)
 	{
 		List<String> arrayList=new ArrayList<String>();
@@ -204,7 +203,7 @@ public class ReadDataFromExcel {
 		userStreamSelectedIndividual.put("Test Automation Design", testAutomationDesignTopic);
 		
 		/*Test Automation Execution*/
-		String testAutomationExecutionTopic=getValuefromMap(values, "Test Automation Execution")+";"+getValuefromMap(values, "Automation Execution")+";"+getValuefromMap(values, "Sustenance/Maintainence");
+		String testAutomationExecutionTopic=getValuefromMap(values, "Test Automation Execution")+";"+getValuefromMap(values, "Automation Execution")+";"+getValuefromMap(values, "Sustenance/Maintenance");
 		testAutomationExecutionTopic=replaceTwosemicolons(testAutomationExecutionTopic);
 		flagAssessment("Test Automation Execution", testAutomationExecutionTopic);
 		userStreamSelectedIndividual.put("Test Automation Execution", testAutomationExecutionTopic);
@@ -259,11 +258,11 @@ public class ReadDataFromExcel {
 		flagAssessment("Test Strategy and Planning",testStrategyAndPlanningTopic);
 		userStreamSelectedIndividual.put("Test Strategy and Planning",testStrategyAndPlanningTopic);
 		
-		/*Test Solutions (Pre Sales)*/
-		String testSolutionsTopic=getValuefromMap(values, "Test Solutions (Pre Sales)")+";"+getValuefromMap(values, "Estimation");
+		/*Test Solutions (Presales)*/
+		String testSolutionsTopic=getValuefromMap(values, "Test Solutions (Presales)")+";"+getValuefromMap(values, "Estimation");
 		testSolutionsTopic=replaceTwosemicolons(testSolutionsTopic);
-		flagAssessment("Test Solutions (Pre Sales)",testSolutionsTopic);
-		userStreamSelectedIndividual.put("Test Solutions (Pre Sales)",testSolutionsTopic);
+		flagAssessment("Test Solutions (Presales)",testSolutionsTopic);
+		userStreamSelectedIndividual.put("Test Solutions (Presales)",testSolutionsTopic);
 		
 		/*Program Management*/
 		String programManagementTopic=getValuefromMap(values, "Processes modeling and Change Management Planning")+";"+getValuefromMap(values, "Project Management");
@@ -500,7 +499,7 @@ public class ReadDataFromExcel {
 				break;
 				
 			
-		 case "Test Solutions (Pre Sales)":		
+		 case "Test Solutions (Presales)":		
 			 
 			 	String testSolutionsAdvanced="Ability to individually handle Test Solutions and responses for proposals for a single project or multiple projects;Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date;Ability to conduct effective and compelling proposal walkthroughs leading towards conversion;Provides costing, schedule and optimization solutions for proposals and supports in proposal defence";
 				String testSolutionsintermediate="Ability to support development of solution for RFP response;Ability to individually handle Test Solutions and responses for proposals for a single project or multiple projects;Ability to state assumptions and dependencies clearly;Ensures that assets for proposal building are managed and kept up to date;Ability to  sequence test cycles/phases in line with customer schedule, plan effort and schedule along with scope boundaries";
