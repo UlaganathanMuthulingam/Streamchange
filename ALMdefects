@@ -1,0 +1,489 @@
+package testing;
+
+import java.io.File;
+import java.io.FileInputStream;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.commons.lang3.math.NumberUtils;
+
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.Assert;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import com.scb.alm.AlmDefects;
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+
+public class GetDefectDetails extends AlmDefects {
+
+	public Map<String, Object[]> allDefectsList = new LinkedHashMap<String, Object[]>();
+	public Map<String, String> defectFiltersList = new HashMap<String, String>();
+	public Map<String, Set<String>> applicableFiltersList = new HashMap<String, Set<String>>();
+	
+	public Map<String, List<String>> filteredDefectsList = new LinkedHashMap<String, List<String>>();
+	
+	public void writeValuesinExcel(Map<String, List<String>> mapToUpdateInExcel) throws IOException {
+		System.out.println(mapToUpdateInExcel.toString());
+		XSSFWorkbook book = new XSSFWorkbook();
+		XSSFSheet sheet = book.createSheet("Defects");
+		Set<String> keySet = mapToUpdateInExcel.keySet();
+		int rownum = 0;
+		for (String value : keySet) {
+			XSSFRow row = sheet.createRow(rownum++);
+			List<String> arr = mapToUpdateInExcel.get(value);
+			int cellnum = 0;
+			for (String str : arr) {
+				if(rownum==1)
+				{
+					XSSFCellStyle style = book.createCellStyle();
+					XSSFFont font= book.createFont();
+					 font.setBold(true);
+					 style.setFont(font);
+					 XSSFCell cell = row.createCell(cellnum++);
+					 cell.setCellValue(str);
+					 cell.setCellStyle(style);
+				}
+				else
+				{
+					XSSFCell cell = row.createCell(cellnum++);
+					if(NumberUtils.isNumber(str))
+					{
+						cell.setCellValue(Integer.parseInt(str));	
+					}
+					else
+					{
+						cell.setCellValue(str);	
+					}
+					
+				}
+
+			}
+
+		}
+		
+		 File defectReport = new File(FileUtil.excelReportPath);
+		
+		 if(defectReport.exists())
+			{
+			 defectReport.delete();
+			}
+		
+		FileOutputStream output = new FileOutputStream(FileUtil.excelReportPath);
+		book.write(output);
+		output.close();
+
+	}
+
+	public void alldefects(Map<String, Object[]> allDefectListMap)
+			throws ParserConfigurationException, SAXException, IOException {
+
+		Map<String, String> defectDetail;
+		RequestSpecification request = null;
+		String lwssoCookie;
+		String qcSessionCookie;
+		String baseURIDetails=getValueFromPropFile(FileUtil.config, "ALMBaseURI");
+		String authorization=getValueFromPropFile(FileUtil.config, "ALMAuthorization");
+		String domainName=getValueFromPropFile(FileUtil.config, "ALMDomainName");
+		String projectName=getValueFromPropFile(FileUtil.config, "ALMProjectName");
+		String urltoGetDefects="qcbin/rest/domains/"+domainName+"/projects/"+projectName+"/defects";
+		RestAssured.baseURI = baseURIDetails;
+		request = RestAssured.given().header("Authorization",authorization);
+		Response captureLwssoCookie = request.given().relaxedHTTPSValidation().post("/qcbin/authentication-point/authenticate");
+		System.out.println("Authorization - " + captureLwssoCookie.getStatusCode());
+		verifyAuthorization(captureLwssoCookie.getStatusCode());
+		lwssoCookie = captureLwssoCookie.cookie("LWSSO_COOKIE_KEY");
+		System.out.println("cookie -> " + lwssoCookie);
+		Response capturingQcSessionCookie = request.given().cookie("LWSSO_COOKIE_KEY", lwssoCookie)
+				.relaxedHTTPSValidation().post("/qcbin/rest/site-session");
+		System.out.println(capturingQcSessionCookie.getStatusCode());
+		verifyQCsessioncreation(capturingQcSessionCookie.getStatusCode());
+		System.out.println("Res" + capturingQcSessionCookie.getCookie("QCSession"));
+		qcSessionCookie = capturingQcSessionCookie.getCookie("QCSession");
+		Response captringDefects = request.given().cookie("LWSSO_COOKIE_KEY", lwssoCookie)
+				.cookie("QCSession", qcSessionCookie).relaxedHTTPSValidation()
+				.get(urltoGetDefects);
+		System.out.println(captringDefects.getStatusCode());
+		verifyingDefectCapturing(captringDefects.getStatusCode(), baseURIDetails+"/"+urltoGetDefects);
+		
+		InputStream input = captringDefects.asInputStream();
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(input);
+		doc.getDocumentElement().normalize();
+
+		System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+		NodeList entityNodesList = doc.getElementsByTagName("Entity");
+
+		System.out.println("----------------------------");
+		// Entity for loop
+		for (int entityNode = 0; entityNode < entityNodesList.getLength(); entityNode++) {
+			Node nNode = entityNodesList.item(entityNode);
+			NodeList entityChildNodeList = nNode.getChildNodes();
+
+			// Fields for loop
+			for (int childname = 0; childname < entityChildNodeList.getLength(); childname++) {
+				Node nNodeChild = entityChildNodeList.item(childname);
+				defectDetail = new HashMap<String, String>();
+				String fieldValue = "";
+				String fieldName = "";
+				Element eElement = (Element) nNodeChild;
+				if (eElement.getTagName().equalsIgnoreCase("Fields")) {
+					NodeList forFields = eElement.getChildNodes();
+					// defect field
+					for (int defectFields = 0; defectFields <= forFields.getLength(); defectFields++) {
+						// For loop starting
+						Node defectDetails = forFields.item(defectFields);
+						Element defectDetailElement = (Element) defectDetails;
+						try {
+							fieldName = defectDetailElement.getAttribute("Name");
+							fieldValue = defectDetailElement.getElementsByTagName("Value").item(0).getTextContent();
+
+							if (fieldValue.length() == 0) {
+
+								defectDetail.put(fieldName, "values not available in alm for this defect");
+							} else {
+
+								defectDetail.put(fieldName, fieldValue);
+							}
+						} catch (Exception e) {
+
+							defectDetail.put(fieldName, "values not available in alm for this defect");
+						}
+
+						AlmDefects defectsObj = new AlmDefects();
+						defectsObj.setDefectId(defectDetail.get("id"));
+						defectsObj.setTestcaseId(defectDetail.get("user-06"));
+						defectsObj.setProjectName(defectDetail.get("user-11"));
+						defectsObj.setRaisedBy(defectDetail.get("user-20"));
+						defectsObj.setPriority(defectDetail.get("priority"));
+						defectsObj.setDefectTitle(defectDetail.get("name"));
+						defectsObj.setStatus(defectDetail.get("user-01"));
+						defectsObj.setAssignedTo(defectDetail.get("owner"));
+						defectsObj.setApplicationName(defectDetail.get("project"));
+						defectsObj.setCountry(defectDetail.get("user-15"));
+						defectsObj.setCycle(defectDetail.get("user-02"));
+						allDefectListMap.put(defectsObj.getDefectId(), new Object[] { defectsObj });
+
+					}
+
+				}
+
+			}
+
+		}
+
+		allDefectListMap.remove(null);
+		
+	}
+
+	public void verifyAuthorization(int statusCode)
+	{
+		if(statusCode==200)
+		{
+			System.out.println("Wow...!!!!!! Authorization Success, recived status code "+statusCode);
+		}
+		else
+		{
+			
+			System.out.println("Authorization Failed");
+			Assert.fail("Oops..!!!! Authorization Failed expected 200, received "+statusCode);
+		}
+	}
+	
+	
+	public void verifyQCsessioncreation(int statusCode)
+	{
+		if(statusCode==201)
+		{
+			System.out.println("Wow...!!!!! QCSession creation Success..!!!!, status code received "+statusCode);
+		}
+		else
+		{	
+			System.out.println("QCSession not created");
+			Assert.fail("Oops...!!!! QCSession not created, status code received  "+statusCode);
+		}
+	}
+		
+	public void verifyingDefectCapturing(int statusCode, String url)
+	{
+		if(statusCode==200)
+		{
+			System.out.println("Wow...!!!!! Defect capturing api accessed successfully ..!!!!, status code received "+statusCode);
+		}
+		else
+		{	
+			System.out.println("Oops..!!!! There is a issue with api url, please can you double check the url..status code received "+statusCode+" api url - "+url);
+			Assert.fail("Oops..!!!! There is a issue with api url, please can you double check the url..status code received "+statusCode+" api url - "+url);
+		}
+	}
+		
+	
+	
+	public void fromMap(Map<String, Object[]> defectMap, Map<String, Set<String>> propMap2,Map<String,List<String>> filteredList)
+
+	{
+		Map<String, String> defectValues = new LinkedHashMap<String, String>();
+		List<String> defects;
+		List<String> defectTitle = new ArrayList<>();
+		
+		Collections.addAll(defectTitle, "defId","defTitle","defTestcaseId","defProjectName","defRaisedBy","defPriority","defStatus","defAssignedTo","defApplicationName","defCountry","defCycle");		
+		filteredList.put("title", defectTitle);
+		for (Map.Entry<String, Object[]> defect : defectMap.entrySet()) {
+			Object[] obj = defect.getValue();
+
+			for (Object object : obj) {
+				try {
+					AlmDefects almdef = (AlmDefects) object;
+					
+					defectValues.put("defId", almdef.getDefectId().toLowerCase());
+					defectValues.put("defTitle", almdef.getDefectTitle().toLowerCase());
+					defectValues.put("defTestcaseId", almdef.getTestcaseId().toLowerCase());
+					defectValues.put("defProjectName", almdef.getProjectName().toLowerCase());
+					defectValues.put("defRaisedBy", almdef.getRaisedBy().toLowerCase());
+					defectValues.put("defPriority", almdef.getPriority().toLowerCase());
+					defectValues.put("defStatus", almdef.getStatus().toLowerCase());
+					defectValues.put("defAssignedTo", almdef.getAssignedTo().toLowerCase());
+					defectValues.put("defApplicationName", almdef.getApplicationName().toLowerCase());
+					defectValues.put("defCountry", almdef.getCountry().toLowerCase());
+					defectValues.put("defCycle", almdef.getCycle().toLowerCase());
+					/*Collections.addAll(defects, almdef.getDefectId().toLowerCase(),
+							almdef.getDefectTitle().toLowerCase(),
+							almdef.getTestcaseId().toLowerCase(),
+							almdef.getProjectName().toLowerCase(),
+							almdef.getRaisedBy().toLowerCase(),
+							almdef.getPriority().toLowerCase(),
+							almdef.getStatus().toLowerCase(),
+							almdef.getAssignedTo().toLowerCase(),
+							almdef.getApplicationName().toLowerCase(),
+							almdef.getCountry().toLowerCase(),
+						almdef.getCycle().toLowerCase());
+					*/
+					if (almFilterverification(propMap2, defectValues) == true) 
+					{
+						 defects=new ArrayList<String>();
+						System.out.println("Id--------------------"+defectValues.get("defId"));
+						defects.addAll(defectValues.values());
+						filteredList.put(defectValues.get("defId"), defects);																	
+					}					
+
+				} catch (Exception e) 
+				{
+
+					System.out.println("There is issue with reading xml response" + e);
+				}
+				
+			}
+			
+		}
+		
+		if(filteredList.size()==1)
+		{
+			List<String> noResult = new ArrayList<>();
+			String appliedFilters="";
+			
+			for (Map.Entry<String, Set<String>> defectFilters : propMap2.entrySet()) {
+				
+				if(defectFilters.getValue().size()>0)
+				{
+					appliedFilters=appliedFilters+ defectFilters.getKey()+" - " +defectFilters.getValue()+"\n";
+					System.out.println("Inside"+defectFilters.getValue());
+				}
+			}
+			Collections.addAll(noResult, "0 Defects found for below filter combination \n"+appliedFilters);
+			filteredList.put("No results", noResult);
+		}
+
+	}
+
+	public boolean almFilterverification(Map<String, Set<String>> propMap2, Map<String, String> defectsmap) {
+
+		Map<String, Boolean> filterFlags = new HashMap<String, Boolean>();
+		for (Map.Entry<String, Set<String>> ele : propMap2.entrySet()) {
+
+			if (!ele.getValue().isEmpty()) {
+				switch (ele.getKey()) {
+				case "ApplicationFilter":
+					if (propMap2.get("ApplicationFilter").contains(defectsmap.get("defApplicationName"))) {
+						filterFlags.put("ApplicationFilter", Boolean.TRUE);
+					} else {
+
+						filterFlags.put("ApplicationFilter", Boolean.FALSE);
+					}
+
+					break;
+
+				case "StatusFilter":
+
+					if (propMap2.get("StatusFilter").contains(defectsmap.get("defStatus"))) {
+
+						filterFlags.put("StatusFilter", Boolean.TRUE);
+					}
+
+					else {
+						filterFlags.put("StatusFilter", Boolean.FALSE);
+					}
+					break;
+
+				case "CountryFilter":
+
+					if (propMap2.get("CountryFilter").contains(defectsmap.get("defCountry"))) {
+
+						filterFlags.put("CountryFilter", Boolean.TRUE);
+					}
+
+					else {
+						filterFlags.put("CountryFilter", Boolean.FALSE);
+					}
+					break;
+
+				case "TestcaseFilter":
+
+					if (propMap2.get("TestcaseFilter").contains(defectsmap.get("defTestcaseId"))) {
+
+						filterFlags.put("TestcaseFilter", Boolean.TRUE);
+					}
+
+					else {
+						filterFlags.put("TestcaseFilter", Boolean.FALSE);
+					}
+					break;
+
+				case "CycleFilter":
+
+					if (propMap2.get("CycleFilter").contains(defectsmap.get("defCycle"))) {
+
+						filterFlags.put("CycleFilter", Boolean.TRUE);
+					}
+
+					else {
+						filterFlags.put("CycleFilter", Boolean.FALSE);
+					}
+					break;
+
+				case "ProjectFilter":
+
+					if (propMap2.get("ProjectFilter").contains(defectsmap.get("defProjectName"))) {
+
+						filterFlags.put("ProjectFilter", Boolean.TRUE);
+					}
+
+					else {
+						filterFlags.put("ProjectFilter", Boolean.FALSE);
+					}
+					break;
+
+				case "PriorityFilter":
+
+					if (propMap2.get("PriorityFilter").contains(defectsmap.get("defPriority"))) {
+
+						filterFlags.put("PriorityFilter", Boolean.TRUE);
+					}
+
+					else {
+						filterFlags.put("PriorityFilter", Boolean.FALSE);
+					}
+					break;
+
+				}
+
+			}
+
+		}
+
+		if (!filterFlags.containsValue(false)) {
+			
+			return true;
+		} 
+		else 
+		{
+			return false;
+		}
+	}
+
+	public void applyFilter(Map<String, String> filtersMap, Map<String, Set<String>> propFile) {
+		String val[];
+		Set<String> lst;
+
+		for (Map.Entry<String, String> filters : filtersMap.entrySet()) {
+			lst = new HashSet<String>();
+			if (filters.getValue().length() > 0) 
+			{
+				val = filters.getValue().split(",");
+				if (val.length > 1) {
+					for (int i = 0; i < val.length; i++) {
+						lst.add(val[i].toLowerCase().trim());
+					}
+
+				} else {
+					lst.add(val[0].toLowerCase().trim());
+				}
+
+			}
+			propFile.put(filters.getKey(), lst);
+
+		}
+		System.out.println(propFile.values());
+
+	}
+
+	public void getFilterDetailsFromProp(Map<String, String> defectFilter) throws IOException {
+
+		Properties prop = new Properties();
+		FileInputStream input = new FileInputStream(FileUtil.input);
+		prop.load(input);
+		for (String names : prop.stringPropertyNames()) {
+
+			defectFilter.put(names, prop.getProperty(names).trim());
+		}
+
+		System.out.println("FilterMap" + defectFilter);
+
+	}
+
+	public String getValueFromPropFile(String location,String value) throws IOException
+	{
+		Properties prop = new Properties();
+		FileInputStream input = new FileInputStream(location);
+		prop.load(input);
+		return prop.getProperty(value).trim();
+	}
+	
+	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+		// TODO Auto-generated method stub
+
+		GetDefectDetails almdef = new GetDefectDetails();
+		almdef.getFilterDetailsFromProp(almdef.defectFiltersList);
+		almdef.applyFilter(almdef.defectFiltersList, almdef.applicableFiltersList);
+		almdef.alldefects(almdef.allDefectsList);
+		almdef.fromMap(almdef.allDefectsList, almdef.applicableFiltersList,almdef.filteredDefectsList);
+		almdef.writeValuesinExcel(almdef.filteredDefectsList);
+		
+	}
+}
