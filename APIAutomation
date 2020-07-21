@@ -1,0 +1,284 @@
+package dummy;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+
+
+
+
+public class APIRunner {
+
+	// List<GetterSetterExample> objVal =new ArrayList<GetterSetterExample>();
+	 public Map<String, Object[]> alldefectList=new LinkedHashMap<String, Object[]>();
+	 public Map<String,List<String>> filteredDefects=new LinkedHashMap<String, List<String>>(); 
+	public void valuesFromResponse()
+	{
+		try {
+			RestAssured.baseURI="https://jira.global.standardchartered.com/rest/api/2/search/";
+			Response res;
+			RequestSpecification req=RestAssured.given().header("Authorization","Basic MTYwMTAxNzpXb3JsZG1AMTEyMg==");
+			res=req.given().relaxedHTTPSValidation().get("?jql=project = MQHUB AND status = Open&fields=issuetype,summary,status,priority,resolution,assignee,labels,reporter&maxResults=4");
+			System.out.println(res.getStatusCode());
+			System.out.println(res.body());
+			//System.out.println(res.asString());
+			JsonPath path=new JsonPath(res.asInputStream());
+			 List<String> address  = path.getList("issues");
+			 JSONArray json = new JSONArray(Arrays.asList(address));
+			JSONArray values = json.getJSONArray(0);
+			for (int i = 0; i < values.length(); i++) 
+			{
+				
+				JSONObject obj = values.getJSONObject(i);
+				JiraFileds getset = new JiraFileds();				
+				getset.setDefectId(getJsonValue(obj, "key"));
+				getset.setIssueType(getJsonValueWithTwoChild(obj, "fields", "issuetype", "name"));
+				getset.setdefectTitle(getValueFromJsonObjectWithSingleChild(obj, "fields", "summary"));
+				getset.setPrioirty(getJsonValueWithTwoChild(obj, "fields", "priority", "name"));
+				getset.setStatus(getJsonValueWithTwoChild(obj, "fields", "status", "name"));
+				getset.setResolution(getJsonValueWithTwoChild(obj, "fields", "resolution", "name"));
+				getset.setLabel(getValueFromJsonObjectWithSingleChildJsonArray(obj, "fields", "labels"));
+				getset.setReporter(getJsonValueWithTwoChild(obj, "fields", "reporter", "emailAddress"));
+				getset.setAssignee(getJsonValueWithTwoChild(obj, "fields", "assignee", "emailAddress"));
+				//defectList.put("title",new Object[]{"Defect Id","Type","Title","Priority","Resolution","Label","Reporter","Assignee"});
+				alldefectList.put(getset.getDefectId(), new Object[]{getset});
+				//objVal.add(getset);
+						
+			}
+			
+		} 
+		
+		catch (JSONException e) {
+			// TODO Auto-generated catch block
+			String message=e.getMessage();
+			System.out.println(message);
+			if(message.startsWith("JSONObject") & message.endsWith("not found."))
+					{
+				System.out.println("Nothing");
+					}
+			
+				
+		}
+
+		
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			
+			e.printStackTrace();
+		}
+
+	
+		
+	}
+	
+	
+	public void printGetMethod(Map<String, Object[]> allDefects,Map<String,List<String>> defectsAfterfiltering)
+	{
+		Map<String,String> defectValues= new HashMap<String,String>();
+		List<String> defects=new ArrayList<String>();;
+		
+		for (Map.Entry<String, Object[]> allDef: allDefects.entrySet()) {
+			
+			Object objval[] =allDef.getValue();
+			for (Object defobj : objval) 
+			{
+				System.out.println("Times");
+				JiraFileds execution=(JiraFileds) defobj;
+				
+				Collections.addAll(defects,
+						execution.getDefectId(),
+						execution.getIssueType(),
+						execution.getStatus(),
+						execution.getPrioirty(),
+						execution.getResolution(),
+						execution.getAssignee(),
+						execution.getReporter(),
+						execution.getLabel());
+				defectValues.put("defectId", execution.getDefectId().toLowerCase());
+				defectValues.put("issueType", execution.getIssueType().toLowerCase());
+				defectValues.put("status", execution.getStatus().toLowerCase());
+				defectValues.put("priority", execution.getPrioirty().toLowerCase());
+				defectValues.put("resolution", execution.getResolution().toLowerCase());
+				defectValues.put("assignee", execution.getAssignee().toLowerCase());
+				defectValues.put("reporter", execution.getReporter().toLowerCase());
+				defectValues.put("label", execution.getLabel().toLowerCase());
+				//defectsAfterfiltering.put(execution.defectId, execution.)
+				
+				defectsAfterfiltering.put(execution.getDefectId(), defects);
+			}
+			
+			
+		}
+		
+		
+		/*try {
+			for(int i=0;i<gt.size();i++)
+			{
+			GetterSetterExample g = gt.get(i);
+			
+			System.out.println(g.getDefectId()+"-"+g.getIssueType()+"-"+g.getStatus()+"-"+g.getPrioirty()+"-"+g.getResolution()+"-"+g.getAssignee()+"-"+g.getReporter()+"-"+g.getLabel());				
+		} 
+		}catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		*/
+	}
+	
+	
+	public void writeValuesinExcel(Map<String, List<String>> map) throws IOException {
+		System.out.println(map.toString());
+		XSSFWorkbook book = new XSSFWorkbook();
+		XSSFSheet sheet = book.createSheet("Defects");
+		Set<String> keySet = map.keySet();
+		int rownum = 0;
+		for (String value : keySet) {
+			XSSFRow row = sheet.createRow(rownum++);
+			List<String> arr = map.get(value);
+			int cellnum = 0;
+			for (String str : arr) {
+				if(rownum==1)
+				{
+					XSSFCellStyle style = book.createCellStyle();
+					XSSFFont font= book.createFont();
+					 font.setBold(true);
+					 style.setFont(font);
+					 XSSFCell cell = row.createCell(cellnum++);
+					 cell.setCellValue(str);
+					 cell.setCellStyle(style);
+				}
+				else
+				{
+					XSSFCell cell = row.createCell(cellnum++);
+					if(NumberUtils.isNumber(str))
+					{
+						cell.setCellValue(Integer.parseInt(str));	
+					}
+					else
+					{
+						cell.setCellValue(str);	
+					}
+					
+				}
+
+			}
+
+		}
+		
+		 File defectReport = new File("C:\\Users\\1601017\\Desktop\\Defects.xlsx");
+		
+		 if(defectReport.exists())
+			{
+			 defectReport.delete();
+			}
+		
+		FileOutputStream output = new FileOutputStream("C:\\Users\\1601017\\Desktop\\Defects.xlsx");
+		book.write(output);
+		output.close();
+
+	}
+
+	
+	public String getJsonValue(JSONObject object,String key)
+	{
+		
+		try {
+			return object.get(key).toString();
+		} catch (JSONException e) {
+			
+			return "";
+		}
+	}
+	
+	public String getValueFromJsonObjectWithSingleChild(JSONObject parent,String JsonChildObjectOne,String input)
+	{
+		try {
+			return parent.getJSONObject(JsonChildObjectOne).getString(input);
+		} catch (JSONException e) {
+			
+			return "";
+		}
+	}
+	
+	
+	public String getJsonValueWithTwoChild(JSONObject parent,String JsonChildObjectOne,String JsonChildObjectTwo,String input)
+	{
+		try {
+			return parent.getJSONObject(JsonChildObjectOne).getJSONObject(JsonChildObjectTwo).getString(input);
+		} catch (JSONException e) {
+			
+			return "";
+		}
+	}
+	
+	public String getValueFromJsonObjectWithSingleChildJsonArray(JSONObject parent,String JsonArrayObjectOne,String input)
+	{
+		try {
+			JSONArray valueDetails=parent.getJSONObject(JsonArrayObjectOne).getJSONArray(input);
+			if (valueDetails.length()==0)
+			{
+				return "";
+			}
+			else
+			{
+				return valueDetails.toString();
+			}
+			
+			
+		} catch (JSONException e) {
+			
+			return "not available"+ e;
+		}
+	}
+
+	
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		
+		APIRunner runner=new APIRunner();
+		runner.valuesFromResponse();
+		runner.printGetMethod(runner.alldefectList,runner.filteredDefects);
+		runner.writeValuesinExcel(runner.filteredDefects);
+		/*FileInputStream input=new FileInputStream("C:\\Users\\1601017\\Desktop\\MDIS\\RequestPayloadDetails\\Email_singlecccaddress.xml");
+        RestAssured.baseURI="https://10.23.211.80:8443";
+      //  RequestSpecification req=RestAssured.given().header("Content-type","application/soap+xml").header("Authorization","Basic YndzdXNlcjphYmMxMjM0NQ==")
+               // .and().body(IOUtils.toString(input,"UTF-8"));
+        RequestSpecification req=RestAssured.given().header("Content-type","text/soap+xml")
+                .and().body(IOUtils.toString(input,"UTF-8"));
+        Response res=req.given().relaxedHTTPSValidation().when().post("/MDISWEBSERVICE/MDISService");
+        System.out.println(res.asString());
+     */
+		
+		
+		
+		//RestAssured.baseURI="https://jira.global.standardchartered.com/rest/api/2/search";
+						
+	}
+
+	
+		
+}
