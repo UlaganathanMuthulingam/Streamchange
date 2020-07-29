@@ -1,8 +1,8 @@
-package com.maveric.streamchange;
+package com.maveric.streamChange;
 
 import java.io.File;
 import java.io.FileInputStream;
-
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +12,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import java.util.Map.Entry;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -20,50 +24,62 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.testng.Assert;
 
 
 
 
 
 
-public class ReadDataFromExcel {
+
+public class Streamchange {
 	public Map<String,Map<String,String>> userStramValues = new LinkedHashMap<String,Map<String,String>>();
 	public  Map<String,String> userStreamOutputFlagsIndividual;
 	public  Map<String,String> userStreamSelectedIndividual;
 	public  Map<String,Map<String,String>> userStreamSelectedAll=new LinkedHashMap<String,Map<String,String>>();
 	public Map<String,Map<String,String>> userStreamOutputValuesAll=new LinkedHashMap<String,Map<String,String>>();
 	
-	public void updateExcelValuesInMap(Map<String,Map<String,String>> inputMap) throws IOException
+	public void updateExcelValuesInMap(Map<String,Map<String,String>> inputMap)
 	{
-		Map<String,String> tempMap;
-		
-		FileInputStream input=new FileInputStream("C:\\Users\\1601017\\Desktop\\Stream Change\\input.xlsx");
-		XSSFWorkbook workbook=new XSSFWorkbook(input);
-		XSSFSheet sheet=workbook.getSheet("Sheet1");
-		String employeeId = "";
-		XSSFRow row1,row2;
-		row1=sheet.getRow(0);
-		
-		int rowCount=sheet.getLastRowNum();
-		int colcount=row1.getLastCellNum();
-		
-		for(int row=1;row<=rowCount;row++)
-		{
-			tempMap=new LinkedHashMap<String,String>();
-			row2=sheet.getRow(row);
-			for(int col=0;col<colcount;col++)
+		try {
+			Map<String,String> tempMap;
+			FileInputStream input=new FileInputStream("input.xlsx");
+			//FileInputStream input=new FileInputStream("C:\\Users\\lenovo\\Desktop\\stream change latest\\input.xlsx");
+			XSSFWorkbook workbook=new XSSFWorkbook(input);
+			XSSFSheet sheet=workbook.getSheet("Sheet1");
+			String employeeId = "";
+			XSSFRow row1,row2;
+			row1=sheet.getRow(0);
+			int rowCount=sheet.getLastRowNum();
+			int colcount=row1.getLastCellNum();
+			
+			for(int row=1;row<=rowCount;row++)
 			{
+				tempMap=new LinkedHashMap<String,String>();
+				row2=sheet.getRow(row);
+				for(int col=0;col<colcount;col++)
+				{
+					
+					String key=row1.getCell(col).toString().trim();
+					String value=row2.getCell(col).toString().trim();
+					employeeId=row2.getCell(5).toString().trim();
+					tempMap.put(key, value);
+					
+				}
 				
-				String key=row1.getCell(col).toString().trim();
-				String value=row2.getCell(col).toString().trim();
-				employeeId=row2.getCell(5).toString().trim();
-				tempMap.put(key, value);
+				inputMap.put(employeeId, tempMap);			
 				
 			}
-			
-			inputMap.put(employeeId, tempMap);			
-			
+		} catch (FileNotFoundException e) {
+			System.out.println("Input excel not available in the location, "+System.getProperty("user.dir"));
+			popupMessage("Input excel not available in the location, "+System.getProperty("user.dir"));
+			e.printStackTrace();
+			System.exit(1);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Issue while reading values from excel file");
+			popupMessage("Input excel not available in the location");
+			e.printStackTrace();
+			System.exit(1);
 		}									
 		
 	}
@@ -75,19 +91,26 @@ public class ReadDataFromExcel {
 		try
 		{
 			value=mapname.get(key);
-			return value;
+			
+			if (value!=null) {
+				return value;
+			}
+			else
+			{
+				System.out.println(key+ " question not avilable in the in the input sheet ");
+				popupMessage("' "+key+ " ' question not avilable in the in the input sheet ");
+				System.exit(1);
+			}
+			
 		}
 		catch (NullPointerException e) 
 		{
-			System.out.println(key+ " -value not available in map, please check config file"+e);
-			Assert.fail(key+ " -value not available in map, please check config file"+e);
+			System.out.println(key+ " question not avilable in the in the input sheet "+e);
+			popupMessage("' "+key+ " ' question not avilable in the in the input sheet ");
+			e.printStackTrace();
+			System.exit(1);
 		}
-		catch(Exception e)
-		{
-			System.out.println(key+ " -value not available in map, please check config file"+e);
-			Assert.fail(key+ " -value not available in map, please check config file"+e);
-	
-		}
+
 		
 		return value;
 	}
@@ -161,22 +184,30 @@ public class ReadDataFromExcel {
 	
 	public String replaceTwosemicolons(String inputString)
 	{
-		String output=inputString.replaceAll(";;", ";");
+		String output = "";
+		if (!inputString.isEmpty())
+		{
+			output=inputString.replaceAll(";;", ";");	
+		}
+		
 		return output;
 	}
 	
-	public void verifyFlags(Map<String,String> values) throws Exception
+	public void verifyFlags(Map<String,String> values)
 	{
 		userStreamOutputFlagsIndividual=new LinkedHashMap<String,String>();
 		userStreamSelectedIndividual=new LinkedHashMap<String,String>();
-		userStreamOutputFlagsIndividual.put("Name",values.get("Name"));
-		userStreamOutputFlagsIndividual.put("Email",values.get("Email"));
-		userStreamOutputFlagsIndividual.put("Employee ID",values.get("Employee ID"));
-		userStreamOutputFlagsIndividual.put("CURRENT DESIGNATION - PROPOSED DESIGNATION",values.get("CURRENT DESIGNATION - PROPOSED DESIGNATION"));
-		userStreamSelectedIndividual.put("Name", values.get("Name"));
-		userStreamSelectedIndividual.put("Email",values.get("Email"));
-		userStreamSelectedIndividual.put("Employee ID",values.get("Employee ID"));
-		userStreamSelectedIndividual.put("CURRENT DESIGNATION - PROPOSED DESIGNATION",values.get("CURRENT DESIGNATION - PROPOSED DESIGNATION"));
+		userStreamOutputFlagsIndividual.put("Reporting Manager Name",getValuefromMap(values, "Name"));
+		userStreamOutputFlagsIndividual.put("Reporting Manager Email",getValuefromMap(values, "Email"));
+		userStreamOutputFlagsIndividual.put("Nominee - Employee ID",getValuefromMap(values, "Nominee - Employee ID"));
+		userStreamOutputFlagsIndividual.put("Nominee - Employee Name",getValuefromMap(values, "Nominee - Employee Name"));
+		userStreamOutputFlagsIndividual.put("Current Designation - Proposed Designation",getValuefromMap(values, "Current Designation - Proposed Designation"));
+		userStreamSelectedIndividual.put("Reporting Manager Name", getValuefromMap(values,"Name"));
+		userStreamSelectedIndividual.put("Reporting Manager Email", getValuefromMap(values,"Email"));
+		userStreamSelectedIndividual.put("Nominee - Employee ID", getValuefromMap(values,"Nominee - Employee ID"));
+		userStreamSelectedIndividual.put("Nominee - Employee Name", getValuefromMap(values,"Nominee - Employee Name"));
+		userStreamSelectedIndividual.put("Current Designation - Proposed Designation", getValuefromMap(values,"Current Designation - Proposed Designation"));
+		
 		
 		/*TEST CASE DESIGN*/
 		String testCaseDesignTopic=getValuefromMap(values, "Test Case Design");
@@ -187,13 +218,13 @@ public class ReadDataFromExcel {
 		/*TEST EXECUTION*/
 		String testExecutionTopic=getValuefromMap(values, "End to End Testing")+";"+getValuefromMap(values, "Exploratory Testing")+";"+getValuefromMap(values, "Compliance")+";"+getValuefromMap(values, "Test Execution");
 		testExecutionTopic=replaceTwosemicolons(testExecutionTopic);
-		flagAssessment("Test Execution", testExecutionTopic);
+		flagAssessment("Execution", testExecutionTopic);
 		userStreamSelectedIndividual.put("Test Execution", testExecutionTopic);
 		
 		/*STLC Tools*/
 		String stlcToolsTopic=getValuefromMap(values, "STLC Tools");
 		stlcToolsTopic=replaceTwosemicolons(stlcToolsTopic);
-		flagAssessment("STLC Tools", stlcToolsTopic);
+		flagAssessment("Tools", stlcToolsTopic);
 		userStreamSelectedIndividual.put("STLC Tools", stlcToolsTopic);
 		
 		/*Test Automation Design*/
@@ -215,9 +246,10 @@ public class ReadDataFromExcel {
 		userStreamSelectedIndividual.put("Domain/Product Knowledge", domainKnowledgeTopic);
 		
 		/*Defect Logging and Reporting*/
-		String defectLoggingAndReportingTopic=getValuefromMap(values, "Defect Logging and Reporting")+";"+getValuefromMap(values, "Defect Management");
+		String defectLoggingAndReportingTopic=getValuefromMap(values, "Defect Logging and Reporting")+";"+getValuefromMap(values, "Defect Management Reports");
+		System.out.println("------------"+getValuefromMap(values, "Defect Management"));
 		defectLoggingAndReportingTopic=replaceTwosemicolons(defectLoggingAndReportingTopic);
-		flagAssessment("Defect Logging and Reporting", defectLoggingAndReportingTopic);
+		flagAssessment("Defect Reporting", defectLoggingAndReportingTopic);
 		userStreamSelectedIndividual.put("Defect Logging and Reporting", defectLoggingAndReportingTopic);
 		
 		/*Specialized Testing  [ API, Performance Testing, Mobile Testing ]*/
@@ -265,7 +297,8 @@ public class ReadDataFromExcel {
 		userStreamSelectedIndividual.put("Test Solutions (Presales)",testSolutionsTopic);
 		
 		/*Program Management*/
-		String programManagementTopic=getValuefromMap(values, "Processes modeling and Change Management Planning")+";"+getValuefromMap(values, "Project Management");
+		String programManagementTopic=getValuefromMap(values, "Process modeling and Change Management Planning")+";"+getValuefromMap(values, "Project Management");
+		
 		programManagementTopic=replaceTwosemicolons(programManagementTopic);
 		flagAssessment("Program Management", programManagementTopic);
 		userStreamSelectedIndividual.put("Program Management", programManagementTopic);
@@ -283,9 +316,9 @@ public class ReadDataFromExcel {
 		userStreamSelectedIndividual.put("Software Design", softwareDesignTopic);
 		
 		/*Knowledge of Multiple Tools (Build tools, Test frameworks)*/
-		String knowledgeofMultipleToolsTopic=getValuefromMap(values, "Test Architect")+";"+getValuefromMap(values, "Knowledge of Multiple Tools (Build tools, Test frameworks)");
+		String knowledgeofMultipleToolsTopic=getValuefromMap(values, "Test Architect")+";"+getValuefromMap(values, "Knowledge of Multiple Tools");
 		knowledgeofMultipleToolsTopic=replaceTwosemicolons(knowledgeofMultipleToolsTopic);
-		flagAssessment("Knowledge of Multiple Tools (Build tools, Test frameworks)", knowledgeofMultipleToolsTopic);
+		flagAssessment("Knowledge of Multiple Tools", knowledgeofMultipleToolsTopic);
 		userStreamSelectedIndividual.put("Knowledge of Multiple Tools (Build tools, Test frameworks)", knowledgeofMultipleToolsTopic);
 		
 		/*Solution Development*/
@@ -441,11 +474,12 @@ public class ReadDataFromExcel {
 			 
 			 	String specializedTestingAdvanced="Ability to perform testing for at least one type or multiple types of specialised testing using a tool or automate and ensure that all defects that can potentially arise in a given problem state can be adequately covered through various techniques;Advises or supports specialised testing in opportunities";
 				String specializedTestingintermediate="Ability to perform testing for at least one type or multiple types of specialised testing using a tool or automate and ensure that all defects that can potentially arise in a given problem state can be adequately covered through various techniques";
-				String specializedTestingBasic="Knowledge of at least one specialized testing type, and ability to define test types for that testing type;Ability to perform testing for at least one type or multiple types of specialised testing using a tool or automate and ensure that all defects that can potentially arise in a given problem state can be adequately covered through various techniques";
-				String specializedTestingFlag=flagChecker(selectedAnswers,specializedTestingAdvanced, specializedTestingintermediate,specializedTestingBasic, 2, 1, 2);
+				String specializedTestingBasic="Knowledge of at least one specialized testing type, and ability to define test types for that testing type";
+				String specializedTestingFlag=flagChecker(selectedAnswers,specializedTestingAdvanced, specializedTestingintermediate,specializedTestingBasic, 2, 1, 1);
 				userStreamOutputFlagsIndividual.put(topic, specializedTestingFlag);
 				System.out.println("Topic - "+topic+"Selected Ans - "+selectedAnswers+"Category - "+specializedTestingFlag);	
 				break;
+				
 				
 		 case "Defect Management":
 			 
@@ -511,8 +545,8 @@ public class ReadDataFromExcel {
 				
 		 case "Program Management":
 			 
-			 	String programManagementAdvanced="Ability to drive a change control board to approve and percolate changes through the appropriate processes. Control changes at customer level;Ability to apply  superior analytical skills;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures;Ability to continuously focus on Risk Management and include contingency & mitigation planning;Ability to focus on Governance to achieve desired results in the program;Ability to think Big Picture and set the vision;Has sufficient seniority and credibility to advise project teams on their projects in relation to the program;Ability to build effective relationships with Stakeholders;Ability to perform Resource forecasting and fulfilment";
-				String programManagementintermediate="Ability to setup uniform processes to monitor and handle change. Ensure no scope creep and monetize changes;Ability to apply  superior analytical skills;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures;Ability to continuously focus on Risk Management and include contingency & mitigation planning;Ability to focus on Governance to achieve desired results in the program;Ability to think Big Picture and set the vision";
+			 	String programManagementAdvanced="Ability to drive a change control board to approve and percolate changes through the appropriate processes. Control changes at customer level;Ability to apply superior analytical skills;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures;Ability to continuously focus on Risk Management and include contingency & mitigation planning;Ability to focus on Governance to achieve desired results in the program;Ability to think Big Picture and set the vision;Has sufficient seniority and credibility to advise project teams on their projects in relation to the program;Ability to build effective relationships with Stakeholders;Ability to perform Resource forecasting and fulfilment";
+				String programManagementintermediate="Ability to setup uniform processes to monitor and handle change. Ensure no scope creep and monetize changes;Ability to apply superior analytical skills;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures;Ability to continuously focus on Risk Management and include contingency & mitigation planning;Ability to focus on Governance to achieve desired results in the program;Ability to think Big Picture and set the vision";
 				String programManagementBasic="Ability to impose a common set of processes to report progress, change and uncertainty;Ability to adjust plans based on performance changes;Ensures Project Managers use the correct Testing life-cycle for the characteristics of the products they have to test;Good knowledge of techniques for planning, monitoring and controlling programmes;Good knowledge of budgeting and resource allocation procedures";
 				String programManagementFlag=flagChecker(selectedAnswers,programManagementAdvanced, programManagementintermediate,programManagementBasic, 10, 7, 5);
 				userStreamOutputFlagsIndividual.put(topic, programManagementFlag);
@@ -541,7 +575,7 @@ public class ReadDataFromExcel {
 				
 		 case "Knowledge of Multiple Tools (Build tools, Test frameworks)":
 			 
-			 	String knowledgeofMultipleToolsAdvanced="Ability to add Plugins/Add Ons to the tools to overcome limitations;Ability to optimise the use of tools;Ability to conceptualise an integrated platform using the tools";
+			 	String knowledgeofMultipleToolsAdvanced="Ability to add Plugins/Add Ons to the tools to overcome limitations;Ability to optimise the use of tools;Ability to conceptualize an integrated platform using the tools";
 				String knowledgeofMultipleToolsintermediate="Ability to understand the limitations of the tools";
 				String knowledgeofMultipleToolsBasic="Has knowledge of what tools are used for Frameworks, Build and Scripting";
 				String knowledgeofMultipleToolsFlag=flagChecker(selectedAnswers,knowledgeofMultipleToolsAdvanced, knowledgeofMultipleToolsintermediate,knowledgeofMultipleToolsBasic, 3, 1, 1);
@@ -665,21 +699,52 @@ public class ReadDataFromExcel {
 	}
 	
 	
-	public void writeValuesInExcel(Map<String,Map<String,String>> result,String sheetNameDetails,String exceltype) throws Exception
+	public void writeValuesInExcel(Map<String,Map<String,String>> result,String sheetNameDetails,String exceltype)
 	{
-		XSSFWorkbook output;
-		FileInputStream input;
+		
+		XSSFWorkbook output = null;
+		FileInputStream input = null;
+		FileOutputStream outputStream = null;
 		if(exceltype.equalsIgnoreCase("new"))
 		{
 			output=new XSSFWorkbook();
 		}
 		else
 		{
-			input=new FileInputStream(new File("C:\\Users\\1601017\\Desktop\\Stream Change\\output.xlsx"));
-			output=new XSSFWorkbook(input);
+			try {
+				input=new FileInputStream(new File("output.xlsx"));
+				//input=new FileInputStream(new File("C:\\Users\\lenovo\\Desktop\\stream change latest\\output.xlsx"));
+			} 
+			catch (FileNotFoundException e) {
+				
+				System.out.println("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
+				popupMessage("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
+				e.printStackTrace();
+				System.exit(1);
+
+			}
+			
+			try {
+				output=new XSSFWorkbook(input);
+			} catch (IOException e) {
+				System.out.println("Issue while writing values in output excel "+System.getProperty("user.dir"));
+				popupMessage("Issue while writing values in output excel "+System.getProperty("user.dir"));
+				e.printStackTrace();
+				System.exit(1);
+				
+			}
 		}
 		XSSFSheet sheetName=output.createSheet(sheetNameDetails);
-		Set<String> rowValues=userStreamOutputFlagsIndividual.keySet();
+		Set<String> rowValues;
+		if(exceltype.equals("new"))
+		{
+			rowValues=userStreamOutputFlagsIndividual.keySet();
+			
+		}
+		else
+		{
+			rowValues=userStreamSelectedIndividual.keySet();
+		}
 		XSSFRow row0=sheetName.createRow(0);
 		XSSFRow row1;
 		int detailsCellNumber=0;
@@ -704,38 +769,70 @@ public class ReadDataFromExcel {
 	   row1=sheetName.createRow(index);
 	   for(Entry<String, String> individual:tempExeMap.entrySet())
 	   {
-		  
-			  row1.createCell(detailsCellNumber++).setCellValue(individual.getValue());  
-		  
-		      
+			row1.createCell(detailsCellNumber++).setCellValue(individual.getValue());
+		 		      
 	   }
 	   detailsCellNumber=0;
 	   index++;	
 }	
 	
-
-FileOutputStream outputStream=new FileOutputStream(new File("C:\\Users\\1601017\\Desktop\\Stream Change\\output.xlsx"));
-output.write(outputStream);
-outputStream.close();
+ 
+  
+try {
+	outputStream=new FileOutputStream(new File("output.xlsx"));
+	//outputStream = new FileOutputStream(new File("C:\\Users\\lenovo\\Desktop\\stream change latest\\output.xlsx"));
+	output.write(outputStream);
+	outputStream.close();
 	}
 	
+catch (FileNotFoundException e) 
+{
+	System.out.println("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
+	popupMessage("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
+	e.printStackTrace();
+	System.exit(1);
+
+
+}
+
+catch (IOException e)
+{
+	System.out.println("Issue while writing values in output excel "+System.getProperty("user.dir"));
+	popupMessage("Issue while writing values in output excel "+System.getProperty("user.dir"));
+	e.printStackTrace();
+	System.exit(1);
+
+}
+	
+	}
+	
+	public void popupMessage(String message)
+	{
+		JFrame frame=new JFrame();	
+		JOptionPane.showMessageDialog(frame, message);
+		System.exit(0);
+	
+		
+	}
 	
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 
-		ReadDataFromExcel excel=new ReadDataFromExcel();
+		Streamchange excel=new Streamchange();
 		excel.updateExcelValuesInMap(excel.userStramValues);
 		
 		for (Entry<String, Map<String,String>> mapValues : excel.userStramValues.entrySet()) 
 		{
-			String name=mapValues.getValue().get("Name")+mapValues.getValue().get("Employee ID");
+			String name=mapValues.getValue().get("Nominee - Employee Name")+mapValues.getValue().get("Nominee - Employee ID");
 			excel.verifyFlags(mapValues.getValue());
 			excel.userStreamOutputValuesAll.put(name, excel.userStreamOutputFlagsIndividual);
 			excel.userStreamSelectedAll.put(name, excel.userStreamSelectedIndividual);
+			
 								
 		}
 		excel.writeValuesInExcel(excel.userStreamOutputValuesAll, "StreamChange", "new");
 		excel.writeValuesInExcel(excel.userStreamSelectedAll, "SelectedValues", "existing");
+		excel.popupMessage("Assessment completed , Please check output excel sheet");
 	}
 	
 	
