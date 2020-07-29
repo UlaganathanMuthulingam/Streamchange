@@ -1,4 +1,4 @@
-package com.maveric.streamChange;
+package com.maveric.streamchange;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,21 +32,27 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 
-public class Streamchange {
-	public Map<String,Map<String,String>> userStramValues = new LinkedHashMap<String,Map<String,String>>();
+public class ReadDataFromExcel {
+	public  Map<String,Map<String,String>> userStramValues = new LinkedHashMap<String,Map<String,String>>();
 	public  Map<String,String> userStreamOutputFlagsIndividual;
 	public  Map<String,String> userStreamSelectedIndividual;
 	public  Map<String,Map<String,String>> userStreamSelectedAll=new LinkedHashMap<String,Map<String,String>>();
-	public Map<String,Map<String,String>> userStreamOutputValuesAll=new LinkedHashMap<String,Map<String,String>>();
+	public  Map<String,Map<String,String>> userStreamOutputValuesAll=new LinkedHashMap<String,Map<String,String>>();
+	public  XSSFWorkbook excelWorkBook = null;
+	public  FileOutputStream outputStream = null;
+	public FileInputStream inputStream=null;
+	public XSSFSheet excelSheet;
 	
-	public void updateExcelValuesInMap(Map<String,Map<String,String>> inputMap)
+	
+	/*update input sheet values into map*/
+	public void updateExcelValuesInMap(Map<String,Map<String,String>> inputMap,String inputSheetLocation)
 	{
-		try {
+		
 			Map<String,String> tempMap;
-			FileInputStream input=new FileInputStream("input.xlsx");
-			//FileInputStream input=new FileInputStream("C:\\Users\\lenovo\\Desktop\\stream change latest\\input.xlsx");
-			XSSFWorkbook workbook=new XSSFWorkbook(input);
-			XSSFSheet sheet=workbook.getSheet("Sheet1");
+			//FileInputStream input=readInputStream("input.xlsx");
+			FileInputStream input=readInputStream("C:\\Users\\1601017\\Desktop\\Stream Change\\input.xlsx");
+			XSSFWorkbook workbook=loadExcelValuefromInputStream(input);
+			XSSFSheet sheet=getsheetname(workbook,"Sheet1");
 			String employeeId = "";
 			XSSFRow row1,row2;
 			row1=sheet.getRow(0);
@@ -61,6 +68,7 @@ public class Streamchange {
 					
 					String key=row1.getCell(col).toString().trim();
 					String value=row2.getCell(col).toString().trim();
+					
 					employeeId=row2.getCell(5).toString().trim();
 					tempMap.put(key, value);
 					
@@ -69,27 +77,32 @@ public class Streamchange {
 				inputMap.put(employeeId, tempMap);			
 				
 			}
-		} catch (FileNotFoundException e) {
-			System.out.println("Input excel not available in the location, "+System.getProperty("user.dir"));
-			popupMessage("Input excel not available in the location, "+System.getProperty("user.dir"));
-			e.printStackTrace();
-			System.exit(1);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Issue while reading values from excel file");
-			popupMessage("Input excel not available in the location");
-			e.printStackTrace();
-			System.exit(1);
-		}									
+				
 		
 	}
 	
+	/*Get the sheet name from excel sheet*/
+	public XSSFSheet getsheetname(XSSFWorkbook workbook,String sheetName)
+	{
+		XSSFSheet sheet=null;
+		
+			sheet=workbook.getSheet(sheetName);
+			if(sheet==null)
+			{
+				System.out.println("Sheet name 'Sheet1' not available in the input excel "+System.getProperty("user.dir"));
+				popupMessage("Sheet name 'Sheet1' not available in the input excel "+System.getProperty("user.dir"));
+				System.exit(1);
+			}
+		
+					
+		return sheet;
+	}
 	
+	/*get the values from map*/
 	public String getValuefromMap(Map<String,String> mapname,String key)
 	{
 		String value="";
-		try
-		{
+		
 			value=mapname.get(key);
 			
 			if (value!=null) {
@@ -100,24 +113,11 @@ public class Streamchange {
 				System.out.println(key+ " question not avilable in the in the input sheet ");
 				popupMessage("' "+key+ " ' question not avilable in the in the input sheet ");
 				System.exit(1);
-			}
-			
-		}
-		catch (NullPointerException e) 
-		{
-			System.out.println(key+ " question not avilable in the in the input sheet "+e);
-			popupMessage("' "+key+ " ' question not avilable in the in the input sheet ");
-			e.printStackTrace();
-			System.exit(1);
-		}
-
-		
+			}	
 		return value;
 	}
 
-	
-	
-	
+	/*Split the string based on semicolon*/
 
 	public List<String> splitValue(String value)
 	{
@@ -127,13 +127,11 @@ public class Streamchange {
 		arrayList.replaceAll(String::trim);
 		return arrayList;
 		
-		
 	}
 	
-	
+	/*Function will return flag details like basic, Intermediate, Advanced or NA based on the input*/
 	public String flagChecker(String selectedAns,String advancedValue,String intermediateValue,String basicValue,int expectedAdvancedSize,int expectedIntermediateSize,int expectedBasicSize )
 	{
-		
 		
 		List<String> advancedArray=new ArrayList<String>();
 		List<String> intermediateArray=new ArrayList<String>();
@@ -182,6 +180,7 @@ public class Streamchange {
 	}
 	}
 	
+	/*Function will replace two semicolon into single semicolon*/	
 	public String replaceTwosemicolons(String inputString)
 	{
 		String output = "";
@@ -193,6 +192,7 @@ public class Streamchange {
 		return output;
 	}
 	
+	/*Flag verification for each questions*/
 	public void verifyFlags(Map<String,String> values)
 	{
 		userStreamOutputFlagsIndividual=new LinkedHashMap<String,String>();
@@ -397,7 +397,7 @@ public class Streamchange {
 	
 	
 
-	
+	/*Question wise flag assessment */
 	
 	public void flagAssessment(String topic,String selectedAnswers)
 	{
@@ -698,75 +698,128 @@ public class Streamchange {
 		}
 	}
 	
-	
-	public void writeValuesInExcel(Map<String,Map<String,String>> result,String sheetNameDetails,String exceltype)
+	/*Create excel sheet and update the values */
+	public void createAndWriteValuesInExcel(Map<String,Map<String,String>> result,String sheetNameDetails,String location)
 	{
 		
-		XSSFWorkbook output = null;
-		FileInputStream input = null;
-		FileOutputStream outputStream = null;
-		if(exceltype.equalsIgnoreCase("new"))
-		{
-			output=new XSSFWorkbook();
-		}
-		else
-		{
-			try {
-				input=new FileInputStream(new File("output.xlsx"));
-				//input=new FileInputStream(new File("C:\\Users\\lenovo\\Desktop\\stream change latest\\output.xlsx"));
-			} 
-			catch (FileNotFoundException e) {
-				
-				System.out.println("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
-				popupMessage("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
-				e.printStackTrace();
-				System.exit(1);
+		excelWorkBook=new XSSFWorkbook();
+		excelSheet=createsheet(excelWorkBook,sheetNameDetails);
+		Set<String> headervalues=new LinkedHashSet<>();
+		headervalues=userStreamOutputFlagsIndividual.keySet();
+		XSSFRow row0=excelSheet.createRow(0);
+		writeExcelHeaderValues(excelWorkBook,row0,headervalues);
+		writeExcelvalues(result,excelSheet);
+		writeinOutputStream(outputStream, excelWorkBook, location);
+		
+   
+   	}
 
-			}
-			
-			try {
-				output=new XSSFWorkbook(input);
-			} catch (IOException e) {
-				System.out.println("Issue while writing values in output excel "+System.getProperty("user.dir"));
-				popupMessage("Issue while writing values in output excel "+System.getProperty("user.dir"));
-				e.printStackTrace();
-				System.exit(1);
+	/*Update values in existing excel file */
+	public void updatingValuesInExistingExcel(Map<String,Map<String,String>> result,String sheetNameDetails,String location)
+	{
+		inputStream=readInputStream(location);
+		excelWorkBook=loadExcelValuefromInputStream(inputStream);
+		excelSheet=createsheet(excelWorkBook,sheetNameDetails);
+		Set<String> headervalues=new LinkedHashSet<>();
+		headervalues=userStreamSelectedIndividual.keySet();
+		XSSFRow row0=excelSheet.createRow(0);
+		writeExcelHeaderValues(excelWorkBook,row0,headervalues);
+		writeExcelvalues(result,excelSheet);
+		writeinOutputStream(outputStream, excelWorkBook,location);
 				
-			}
-		}
-		XSSFSheet sheetName=output.createSheet(sheetNameDetails);
-		Set<String> rowValues;
-		if(exceltype.equals("new"))
+	}
+	
+	/*load input stream into workbook*/
+	public XSSFWorkbook loadExcelValuefromInputStream(FileInputStream inputStream)
+	{
+		XSSFWorkbook excelworkbook=null;
+		try {
+			excelworkbook=new XSSFWorkbook(inputStream);
+		} catch (IOException e) 
 		{
-			rowValues=userStreamOutputFlagsIndividual.keySet();
+			System.out.println("Issue while loading existing excel sheet "+System.getProperty("user.dir"));
+			popupMessage("Issue while loading existing excel sheet "+System.getProperty("user.dir"));
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return excelworkbook;
+	}
+	
+	/*Read input stream from the given location*/
+	
+	public FileInputStream readInputStream(String location)
+	{
+		FileInputStream inputstream = null;
+		try {
+			inputstream=new FileInputStream(new File(location));
+		} catch (FileNotFoundException e) {
+			System.out.println("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
+			popupMessage("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return inputstream;
+	}
+	
+	/*write output stream into the location*/
+	
+	public void writeinOutputStream(FileOutputStream output,XSSFWorkbook book,String location)
+	{
+		  try {
+			  output = new FileOutputStream(new File(location));
+			book.write(output);
+			output.close();
+		} catch (FileNotFoundException e) {
 			
+			System.out.println("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
+			popupMessage("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
+			e.printStackTrace();
+			System.exit(1);
+
+		} catch (IOException e) {
+			System.out.println("Issue while writing values in output excel "+System.getProperty("user.dir"));
+			popupMessage("Issue while writing values in output excel "+System.getProperty("user.dir"));
+			e.printStackTrace();
+			System.exit(1);
 		}
-		else
-		{
-			rowValues=userStreamSelectedIndividual.keySet();
-		}
-		XSSFRow row0=sheetName.createRow(0);
-		XSSFRow row1;
-		int detailsCellNumber=0;
+	
+	}
+	
+	/*Creating the sheet */
+	
+	public XSSFSheet createsheet(XSSFWorkbook workbook,String sheetName)
+	{
+		XSSFSheet excelsheetName=workbook.createSheet(sheetName);
+		return excelsheetName;
+	}
+	/*writing header excel*/
+	public void writeExcelHeaderValues(XSSFWorkbook workbook,XSSFRow row,Set<String> headervalues)
+	{
 		int headercellNumber=0;
-		XSSFCellStyle style=output.createCellStyle();
-		XSSFFont font = output.createFont();
+		XSSFCellStyle style=workbook.createCellStyle();
+		XSSFFont font = workbook.createFont();
 		font.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);
 		style.setFont(font);
 		
-		for(String headerVal:rowValues)
+		for(String headerVal:headervalues)
 		{
-			XSSFCell cell=row0.createCell(headercellNumber);
+			XSSFCell cell=row.createCell(headercellNumber);
 			cell.setCellValue(headerVal);
 			cell.setCellStyle(style);
 			headercellNumber++;
 		}
+	}
+	/*writing the contents in the excel */
+	public void writeExcelvalues(Map<String,Map<String,String>> result,XSSFSheet sheet)
+	{
 		int index=1;
-   for (Entry<String, Map<String,String>> enterset : result.entrySet()) {	
-
+		int detailsCellNumber=0;
+		XSSFRow row1;
+		for (Entry<String, Map<String,String>> enterset : result.entrySet()) 
+   {	
 	   Map<String,String> tempExeMap=new LinkedHashMap<String,String>();
 	   tempExeMap=enterset.getValue();
-	   row1=sheetName.createRow(index);
+	   row1=sheet.createRow(index);
 	   for(Entry<String, String> individual:tempExeMap.entrySet())
 	   {
 			row1.createCell(detailsCellNumber++).setCellValue(individual.getValue());
@@ -775,51 +828,24 @@ public class Streamchange {
 	   detailsCellNumber=0;
 	   index++;	
 }	
-	
- 
-  
-try {
-	outputStream=new FileOutputStream(new File("output.xlsx"));
-	//outputStream = new FileOutputStream(new File("C:\\Users\\lenovo\\Desktop\\stream change latest\\output.xlsx"));
-	output.write(outputStream);
-	outputStream.close();
 	}
 	
-catch (FileNotFoundException e) 
-{
-	System.out.println("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
-	popupMessage("output excel not available in the location,make sure output excel closed already "+System.getProperty("user.dir"));
-	e.printStackTrace();
-	System.exit(1);
 
-
-}
-
-catch (IOException e)
-{
-	System.out.println("Issue while writing values in output excel "+System.getProperty("user.dir"));
-	popupMessage("Issue while writing values in output excel "+System.getProperty("user.dir"));
-	e.printStackTrace();
-	System.exit(1);
-
-}
-	
-	}
+	/*Popup message implementation*/
 	
 	public void popupMessage(String message)
 	{
 		JFrame frame=new JFrame();	
 		JOptionPane.showMessageDialog(frame, message);
-		System.exit(0);
-	
 		
 	}
 	
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 
-		Streamchange excel=new Streamchange();
-		excel.updateExcelValuesInMap(excel.userStramValues);
+		ReadDataFromExcel excel=new ReadDataFromExcel();
+		excel.updateExcelValuesInMap(excel.userStramValues,"input.xlsx");
+		//excel.updateExcelValuesInMap(excel.userStramValues,"C:\\Users\\1601017\\Desktop\\Stream Change\\input.xlsx");
 		
 		for (Entry<String, Map<String,String>> mapValues : excel.userStramValues.entrySet()) 
 		{
@@ -827,12 +853,15 @@ catch (IOException e)
 			excel.verifyFlags(mapValues.getValue());
 			excel.userStreamOutputValuesAll.put(name, excel.userStreamOutputFlagsIndividual);
 			excel.userStreamSelectedAll.put(name, excel.userStreamSelectedIndividual);
-			
-								
+											
 		}
-		excel.writeValuesInExcel(excel.userStreamOutputValuesAll, "StreamChange", "new");
-		excel.writeValuesInExcel(excel.userStreamSelectedAll, "SelectedValues", "existing");
+		
+		//excel.createAndWriteValuesInExcel(excel.userStreamOutputValuesAll, "StreamChange","C:\\Users\\1601017\\Desktop\\Stream Change\\output.xlsx");
+		//excel.updatingValuesInExistingExcel(excel.userStreamSelectedAll, "SelectedValues","C:\\Users\\1601017\\Desktop\\Stream Change\\output.xlsx");
+		excel.createAndWriteValuesInExcel(excel.userStreamOutputValuesAll, "StreamChange","output.xlsx");
+		excel.updatingValuesInExistingExcel(excel.userStreamSelectedAll, "SelectedValues","output.xlsx");
 		excel.popupMessage("Assessment completed , Please check output excel sheet");
+		System.exit(0);
 	}
 	
 	
