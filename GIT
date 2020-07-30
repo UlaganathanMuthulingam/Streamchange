@@ -1,0 +1,62 @@
+------------------------------------------------------------------------------------------------
+My code is ready to be pushed
+
+cd existing-project
+git init
+git add --all
+git commit -m "Initial Commit"
+git remote add origin https://bitbucket.global.standardchartered.com/scm/~1601017/gitpush.git
+git push -u origin master
+
+
+--------------------------------------------------------------------------------------------------
+
+If my code already there in git
+
+cd existing-project
+git remote set-url origin https://bitbucket.global.standardchartered.com/scm/~1601017/gitpush.git
+git push -u origin --all
+git push origin --tags
+------------------------------------------------------------------------------------------------
+
+
+
+
+1.Navigate to the folder 
+
+2.Use below command to create a new branch
+	git checkout -b <branchname>
+
+3.Use below command to add files 
+	git add --all
+
+4. Use below command if you want add particular file
+	git add <file name>
+
+5. Once files added by using git add command use below command to commit 
+	git commit -m <Comments or Remarks about commit>
+
+6. If you want to add and commit in the single hit, use below command
+	git commit -a -m <Comments or Remarks about commit>
+	(Note - changes will be available in local git repo) 
+
+7. Update values to bitbucket
+	git push origin <branch name>
+
+---------------------------------------------------------------------------------------------------
+Use below command if you want to switch to new branch
+git checkout <branch Name>
+
+
+
+
+
+---------------------------------------------------------------------------------------------------
+Use below command to create new branch
+git checkout -b <brach name>
+---------------------------------------------------------------------------------------------------
+Reset the commits
+
+git reset --hard <sha1-commit-id> 
+
+
