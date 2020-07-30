@@ -1,0 +1,180 @@
+package com.scb.traceHorizon.projectSpecificationFunction;
+
+
+import java.io.IOException;
+import java.util.Map;
+
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.scb.traceHorizon.commonFunction.CommonFunction;
+
+
+public class ProjectFunction extends CommonFunction {
+	
+
+	
+	public String updateConfigJson(Map<String,String> valuemap) throws IOException
+	{		  		  
+			String configFileJson;
+			JsonObject jobject = new JsonObject();
+			JsonObject referenceLinkage=new JsonObject();
+			String requirementJql=getValuefromMap(valuemap, "requirementJql");
+			String requirementIssueTypes=getValuefromMap(valuemap, "requirementIssueTypes");
+			String defectIssueTypes=getValuefromMap(valuemap, "defectIssueTypes");
+			String defectIssueLinkTypes=getValuefromMap(valuemap, "defectIssueLinkTypes");
+			String[] requirementIssueTypesArray=requirementIssueTypes.split(",");
+			String[] defectIssueTypesArray=defectIssueTypes.split(",");
+			String[] defectIssueLinkTypesArray=defectIssueLinkTypes.split(",");
+			JsonArray requirementIssueTypesJArray=new Gson().toJsonTree(requirementIssueTypesArray).getAsJsonArray();
+			JsonArray defectIssueTypesJArray=new Gson().toJsonTree(defectIssueTypesArray).getAsJsonArray();
+			
+			
+			JsonArray defectIssueLinkTypesJArray=new Gson().toJsonTree(defectIssueLinkTypesArray).getAsJsonArray();
+			referenceLinkage.addProperty("name", getValuefromMap(valuemap, "name"));
+			referenceLinkage.addProperty("displayFormat", getValuefromMap(valuemap, "displayFormat"));
+			referenceLinkage.addProperty("linkageType", getValuefromMap(valuemap, "linkageType"));
+			JsonArray referenceLinkageJArray=new JsonArray();
+			referenceLinkageJArray.add(referenceLinkage);
+			jobject.addProperty("requirementJql", requirementJql);
+			jobject.addProperty("type",getValuefromMap(valuemap,"typeInConfig"));
+			jobject.addProperty("enableSmartFilter",getValuefromMap(valuemap,"enableSmartFilter"));
+			jobject.add("requirementIssueTypes", requirementIssueTypesJArray);
+			jobject.add("defectIssueTypes", defectIssueTypesJArray);
+			jobject.add("defectIssueLinkTypes", defectIssueLinkTypesJArray);
+			jobject.add("referenceLinkages", referenceLinkageJArray);
+			Gson gson = new Gson();	
+			configFileJson = gson.newBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(jobject);
+			return configFileJson;
+		
+
+	}
+
+	
+	
+	public String updateDefectConfigJson(Map<String,String> valuemap)
+	{
+		String defectConfigJson;
+		JsonObject jObject=new JsonObject();
+		String defectStatuses=getValuefromMap(valuemap, "defectStatuses");
+		String[] typeIndefectConfigArray=defectStatuses.split(",");
+		JsonArray typeIndefectConfigJArray=new Gson().toJsonTree(typeIndefectConfigArray).getAsJsonArray();
+		jObject.addProperty("defectJql",getValuefromMap(valuemap,"defectJql"));
+		jObject.addProperty("type", getValuefromMap(valuemap,"typeIndefectConfig"));	
+		jObject.add("defectStatuses", typeIndefectConfigJArray);
+		Gson gson = new Gson();
+		defectConfigJson = gson.newBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(jObject);
+		return defectConfigJson; 
+		
+	}
+	
+	
+	public String updateTestCaseConfigJson(Map<String,String> valuemap)
+	{
+		String testCaseConfigJson = "";
+		Gson gson = new Gson();
+
+		if(valuemap.get("typeIntestcaseConfig").equalsIgnoreCase("BITBUCKET"))
+		{
+			JsonObject jObject=new JsonObject();
+			JsonObject location=new JsonObject();
+			location.addProperty("project", getValuefromMap(valuemap, "project"));
+			location.addProperty("repo", getValuefromMap(valuemap,"repo"));
+			location.addProperty("branch", getValuefromMap(valuemap,"branch"));
+			jObject.add("location", location);
+			jObject.addProperty("type", getValuefromMap(valuemap,"workingDirectory"));
+			jObject.addProperty("featurePath", getValuefromMap(valuemap,"featurePath"));
+			jObject.addProperty("requirementLinkType", getValuefromMap(valuemap,"requirementLinkType"));
+			jObject.addProperty("type", getValuefromMap(valuemap,"typeIntestcaseConfig"));		
+			testCaseConfigJson = gson.newBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(jObject);
+			
+			
+			
+		}
+		else if(valuemap.get("typeIntestcaseConfig").equalsIgnoreCase("EXCEL"))
+		{
+			JsonObject jObject=new JsonObject();
+			String testcaseurls=getValuefromMap(valuemap, "testcaseurls");
+			String[] urlInTestcaseConfigArray=testcaseurls.split(",");
+			JsonArray urlInTestcaseConfigJArray=new Gson().toJsonTree(urlInTestcaseConfigArray).getAsJsonArray();
+			
+			jObject.addProperty("authenticationType",getValuefromMap(valuemap,"authenticationType"));
+			jObject.addProperty("credentialType",getValuefromMap(valuemap,"credentialType"));
+			jObject.add("urls", urlInTestcaseConfigJArray);
+			
+			jObject.addProperty("type", getValuefromMap(valuemap,"typeIntestcaseConfig"));
+			testCaseConfigJson = gson.newBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(jObject);
+			
+		}
+		
+		else
+		{
+			Assert.fail("Testcase type should be either EXCEL or BITBUKET");
+		}
+		
+		return testCaseConfigJson;
+	}
+	
+	
+	public String updateTestResultConfigJson(Map<String,String> valuemap)
+	{
+		
+		String testResultConfigJson;
+		JsonObject jObject=new JsonObject();
+		String testresulturls=getValuefromMap(valuemap, "testresulturls");
+		String[] urlArray=testresulturls.split(",");
+		JsonArray urlJArray=new Gson().toJsonTree(urlArray).getAsJsonArray();
+		jObject.addProperty("authenticationType", getValuefromMap(valuemap,"authenticationType"));
+		jObject.addProperty("credentialType", getValuefromMap(valuemap,"credentialType"));
+		jObject.add("urls", urlJArray);
+		jObject.addProperty("type", getValuefromMap(valuemap,"typeinTestResultConfig"));
+		Gson gson = new Gson();
+		testResultConfigJson = gson.newBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(jObject);
+		return testResultConfigJson;
+		
+	}
+	
+	public String updateRegressionTestConfigJson(Map<String,String> valuemap)
+	{
+		String regressionConfigJson;
+		JsonObject jsonObject=new JsonObject();
+		String regressionTags=getValuefromMap(valuemap, "regressionTags");
+		String[] regressionTagsArray=regressionTags.split(",");
+		JsonArray regressionTagsJArray=new Gson().toJsonTree(regressionTagsArray).getAsJsonArray();
+		jsonObject.add("regressionTags", regressionTagsJArray);
+		Gson gson = new Gson();
+		regressionConfigJson = gson.newBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(jsonObject);
+		return regressionConfigJson;
+	}
+
+	
+	
+public void updatePrjAdminAndPrjView(WebElement element,String elementName,String elementValue)
+	
+	{
+	
+		String userIds[]=elementValue.split(",");
+		System.out.println(userIds.length);
+		for(String val:userIds)
+		{
+			
+			mouseClick(element,elementName);
+			mouseType(element,elementName,val);
+			pressEnterKey();
+		}
+		
+	}
+	
+
+public void updateConfigDetail(WebElement element,String elementName,String elementValue)
+{
+	
+	mouseActionclearTextarea(element,elementName);
+	mouseType(element, elementName,elementValue);
+}
+
+
+}
